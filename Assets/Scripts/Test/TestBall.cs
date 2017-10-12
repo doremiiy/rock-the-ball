@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class TestBall : MonoBehaviour {
 
+	private Rigidbody rb;
+	public Vector3 force;
 	void Start () {
-		Rigidbody rb = GetComponent<Rigidbody>();
-		rb.AddForce (new Vector3 (100, 0, 0));
+		rb = GetComponent<Rigidbody>();
+		rb.AddForce (force);
+	}
+
+	void FixedUpdate () {
+		
 	}
 }
