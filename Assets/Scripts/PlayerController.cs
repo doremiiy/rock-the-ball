@@ -55,6 +55,7 @@ public class PlayerController : MonoBehaviour {
 
     private void OnTriggerEnter(Collider collider)
     {
+        Debug.Log("Trigger Detected");
         if (collider.CompareTag("Ball"))
         {
             Debug.Log("Collision with the ball detected ");
