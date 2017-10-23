@@ -24,10 +24,11 @@ public class PlayerController : MonoBehaviour {
                 Debug.Log("Unrecognized controller side");
                 break;
         }
+		InputTracking.Recenter ();
     }
 	
 	void Update () {
-        transform.position = InputTracking.GetLocalPosition(vrNode);
-        transform.rotation = InputTracking.GetLocalRotation(vrNode);
+		transform.localPosition = InputTracking.GetLocalPosition(vrNode);
+		transform.localRotation = InputTracking.GetLocalRotation(vrNode);
     }
 }
