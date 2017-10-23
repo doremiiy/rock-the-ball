@@ -53,12 +53,12 @@ public class PlayerController : MonoBehaviour {
     //    }
     //}
 
-    private void OnTriggerEnter(Collision collision)
+    private void OnTriggerEnter(Collider collider)
     {
-        if (collision.collider.CompareTag("Ball"))
+        if (collider.CompareTag("Ball"))
         {
             Debug.Log("Collision with the ball detected ");
-            Rigidbody ballRigidbody = collision.collider.gameObject.GetComponent<Rigidbody>();
+            Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
             Vector3 force = speed * forceMultiplier;
             ballRigidbody.AddForce(force);
         }
