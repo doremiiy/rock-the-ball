@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 
-    private Dictionary<Utility.Team, int> scores;
+    public GameObject redPlayerBallSpawn;
+    public GameObject bluePlayerBallSpawn;
     public UIScores uiScores;
     public GameObject ball;
+    private Dictionary<Utility.Team, int> scores;
+    private Dictionary<Utility.Team, GameObject> ballSpawnPoints;
+ 
 
     private void Start()
     {
@@ -14,6 +18,11 @@ public class GameManager : MonoBehaviour {
         {
             { Utility.Team.blue, 0 },
             { Utility.Team.red, 0 }
+        };
+        ballSpawnPoints = new Dictionary<Utility.Team, GameObject>
+        {
+            { Utility.Team.blue, bluePlayerBallSpawn },
+            { Utility.Team.red, redPlayerBallSpawn }
         };
     }
 
@@ -27,9 +36,18 @@ public class GameManager : MonoBehaviour {
             // TODO add the end of the game
         } else
         {
-            // TODO add the process to start a new point
-            // The ball should be placed in front of the player who won the point / every 2 points ? 
-            Instantiate(ball);
+            switch (team)
+            {
+                case Utility.Team.blue:
+                    Instantiate(ball, ballSpawnPoints[Utility.Team.red].transform.position, Quaternion.identity);
+                    break;
+                case Utility.Team.red:
+                    Instantiate(ball, ballSpawnPoints[Utility.Team.blue].transform.position, Quaternion.identity);
+                    break;
+                default:
+                    Debug.Log("Unrecognized Team");
+                    break;
+            }
         }
     }
 
