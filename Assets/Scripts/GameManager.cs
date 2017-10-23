@@ -10,9 +10,11 @@ public class GameManager : MonoBehaviour {
 
     private void Start()
     {
-        scores = new Dictionary<Utility.Team, int>();
-        scores.Add(Utility.Team.blue, 0);
-        scores.Add(Utility.Team.red, 0);
+        scores = new Dictionary<Utility.Team, int>
+        {
+            { Utility.Team.blue, 0 },
+            { Utility.Team.red, 0 }
+        };
     }
 
     public void IncreasePlayerScore (Utility.Team team){
@@ -26,6 +28,7 @@ public class GameManager : MonoBehaviour {
         } else
         {
             // TODO add the process to start a new point
+            // The ball should be placed in front of the player who won the point / every 2 points ? 
             Instantiate(ball);
         }
     }
