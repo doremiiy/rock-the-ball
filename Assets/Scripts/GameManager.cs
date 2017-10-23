@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour {
 
     private void Start()
     {
+        scores = new Dictionary<Utility.Team, int>();
         scores.Add(Utility.Team.blue, 0);
         scores.Add(Utility.Team.red, 0);
     }
