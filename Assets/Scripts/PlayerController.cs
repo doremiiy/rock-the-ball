@@ -42,12 +42,24 @@ public class PlayerController : MonoBehaviour {
         //Debug.Log("Current speed:" + speed);
 
     }
-    private void OnCollisionEnter(Collision collision)
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if (collision.collider.CompareTag("Ball"))
+    //    {
+    //        Debug.Log("Collision with the ball detected ");
+    //        Rigidbody ballRigidbody = collision.collider.gameObject.GetComponent<Rigidbody>();
+    //        Vector3 force = speed * forceMultiplier;
+    //        ballRigidbody.AddForce(force);
+    //    }
+    //}
+
+    private void OnTriggerEnter(Collider collider)
     {
-        if (collision.collider.CompareTag("Ball"))
+        Debug.Log("Trigger Detected");
+        if (collider.CompareTag("Ball"))
         {
             Debug.Log("Collision with the ball detected ");
-            Rigidbody ballRigidbody = collision.collider.gameObject.GetComponent<Rigidbody>();
+            Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
             Vector3 force = speed * forceMultiplier;
             ballRigidbody.AddForce(force);
         }
