@@ -7,7 +7,7 @@ public class Utility {
     public enum Team { blue, red };
     public enum HandController { right, left };
 
-    public Team Opp(Team team)
+    static public Team Opp(Team team)
     {
         Team opp;
         if  (team == Team.blue)
