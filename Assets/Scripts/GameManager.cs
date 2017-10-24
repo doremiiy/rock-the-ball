@@ -6,10 +6,15 @@ public class GameManager : MonoBehaviour {
 
     public GameObject redPlayerBallSpawn;
     public GameObject bluePlayerBallSpawn;
+    public GameObject[] redPlayerServiceZones;
+    public GameObject[] bluePlayerServiceZones;
     public UIScores uiScores;
     public GameObject ball;
+
     private Dictionary<Utility.Team, int> scores;
     private Dictionary<Utility.Team, GameObject> ballSpawnPoints;
+    private Dictionary<Utility.Team, GameObject[]> serviceZones;
+    private ServiceZone currentServiceZone;
  
 
     private void Start()
@@ -24,9 +29,15 @@ public class GameManager : MonoBehaviour {
             { Utility.Team.blue, bluePlayerBallSpawn },
             { Utility.Team.red, redPlayerBallSpawn }
         };
+        serviceZones = new Dictionary<Utility.Team, GameObject[]>
+        {
+            { Utility.Team.blue, bluePlayerServiceZones},
+            { Utility.Team.red, redPlayerServiceZones}
+        };
     }
 
-    public void IncreasePlayerScore (Utility.Team team){
+    public void IncreasePlayerScore(Utility.Team team)
+    {
         int oldScore = scores[team];
         scores[team] = ++oldScore;
         uiScores.UpdateScores();
@@ -34,21 +45,25 @@ public class GameManager : MonoBehaviour {
         {
             uiScores.DisplayWinText(team);
             // TODO add the end of the game
-        } else
-        {
-            switch (team)
-            {
-                case Utility.Team.blue:
-                    Instantiate(ball, ballSpawnPoints[Utility.Team.red].transform.position, Quaternion.identity);
-                    break;
-                case Utility.Team.red:
-                    Instantiate(ball, ballSpawnPoints[Utility.Team.blue].transform.position, Quaternion.identity);
-                    break;
-                default:
-                    Debug.Log("Unrecognized Team");
-                    break;
-            }
         }
+        else
+        { 
+            StartNewPoint(team);
+        }
+    }
+
+    private void StartNewPoint(Utility.Team wonLastPoint)
+    {
+        // A new ball is instantiated in front of the player who lost the last point
+        Instantiate(ball, ballSpawnPoints[Utility.Opp(wonLastPoint)].transform.position, Quaternion.identity);
+        int rand = Random.Range(0, serviceZones[wonLastPoint].Length);
+        currentServiceZone = serviceZones[wonLastPoint][rand].GetComponent<ServiceZone>();
+        currentServiceZone.SetIsValid(true);
+    }
+
+    public void ResetServiceZone()
+    {
+        currentServiceZone.SetIsValid(false);
     }
 
     public int GetPlayerScore(Utility.Team team){
