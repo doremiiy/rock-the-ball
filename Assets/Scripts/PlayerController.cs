@@ -1,13 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.VR;
 
 
 
 
-public class PlayerController : NetworkBehaviour {
+public class PlayerController : MonoBehaviour {
 
     public Utility.HandController handController;
     private VRNode vrNode;
@@ -16,7 +15,7 @@ public class PlayerController : NetworkBehaviour {
     private Vector3 speed;
     public float forceMultiplier;
 
-	public void Start () {
+	void Start () {
         // TODO Change the data structure to Dictionnary
         switch (handController)
         {
@@ -35,10 +34,6 @@ public class PlayerController : NetworkBehaviour {
 
     private void FixedUpdate()
     {
-		if (!isLocalPlayer)
-		{
-			return;
-		}
         previousPosition = currentPosition;
         currentPosition = transform.position;
         speed = (currentPosition - previousPosition) / Time.fixedDeltaTime;
