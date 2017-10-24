@@ -1,67 +1,104 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.VR;
 
 
 
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : NetworkBehaviour{
 
-    public Utility.HandController handController;
-    private VRNode vrNode;
-    private Vector3 previousPosition = new Vector3();
-    private Vector3 currentPosition = new Vector3();
-    private Vector3 speed;
-    public float forceMultiplier;
+    [System.Serializable]
+    public class HandManager : System.Object
+    {
+        public GameObject hand;
+        private Vector3 previousPosition = new Vector3();
+        private Vector3 currentPosition = new Vector3();
+        private Vector3 speed;
 
-	void Start () {
-        // TODO Change the data structure to Dictionnary
-        switch (handController)
+        public Vector3 PreviousPosition
         {
-            case Utility.HandController.right:
-                vrNode = VRNode.RightHand;
-                break;
-            case Utility.HandController.left:
-                vrNode = VRNode.LeftHand;
-                break;
-            default :
-                Debug.Log("Unrecognized controller side");
-                break;
+            get
+            {
+                return previousPosition;
+            }
+
+            set
+            {
+                previousPosition = value;
+            }
         }
-        previousPosition = transform.position;
+
+        public Vector3 CurrentPosition
+        {
+            get
+            {
+                return currentPosition;
+            }
+
+            set
+            {
+                currentPosition = value;
+            }
+        }
+
+        public Vector3 Speed
+        {
+            get
+            {
+                return speed;
+            }
+
+            set
+            {
+                speed = value;
+            }
+        }
+    }
+
+    public float forceMultiplier;
+    public HandManager rightHand, leftHand;
+
+    void Start () {
+
     }
 
     private void FixedUpdate()
-    {
-        previousPosition = currentPosition;
-        currentPosition = transform.position;
-        speed = (currentPosition - previousPosition) / Time.fixedDeltaTime;
-		transform.localPosition = InputTracking.GetLocalPosition(vrNode);
-		transform.localRotation = InputTracking.GetLocalRotation(vrNode);
-        //Debug.Log("Current speed:" + speed);
+    {   
+        if (!isLocalPlayer)
+        {
+            return;
+        }
 
+        //rightHand.hand.transform.localPosition = InputTracking.GetLocalPosition(VRNode.RightHand);
+        //rightHand.hand.transform.localRotation = InputTracking.GetLocalRotation(VRNode.RightHand);
+        rightHand.PreviousPosition = rightHand.CurrentPosition;
+        rightHand.CurrentPosition = rightHand.hand.transform.position;
+        rightHand.Speed = (rightHand.CurrentPosition - rightHand.PreviousPosition) / Time.fixedDeltaTime;
+
+        //leftHand.hand.transform.localPosition = InputTracking.GetLocalPosition(VRNode.LeftHand);
+        //leftHand.hand.transform.localRotation = InputTracking.GetLocalRotation(VRNode.LeftHand);
+        leftHand.PreviousPosition = leftHand.CurrentPosition;
+        leftHand.CurrentPosition = leftHand.hand.transform.position;
+        leftHand.Speed = (leftHand.CurrentPosition - leftHand.PreviousPosition) / Time.fixedDeltaTime;
     }
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    if (collision.collider.CompareTag("Ball"))
-    //    {
-    //        Debug.Log("Collision with the ball detected ");
-    //        Rigidbody ballRigidbody = collision.collider.gameObject.GetComponent<Rigidbody>();
-    //        Vector3 force = speed * forceMultiplier;
-    //        ballRigidbody.AddForce(force);
-    //    }
-    //}
 
-    private void OnTriggerEnter(Collider collider)
+    public void ballHit(GameObject hand, Collider collider)
     {
         Debug.Log("Trigger Detected");
-        if (collider.CompareTag("Ball"))
+        if (!collider.CompareTag("Ball"))
         {
-            Debug.Log("Collision with the ball detected ");
-            Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
-            Vector3 force = speed * forceMultiplier;
-            ballRigidbody.AddForce(force);
+            return;
         }
+        Debug.Log("Collision with the ball detected ");
+        Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
+        Vector3 force = new Vector3();
+        if (hand == rightHand.hand)
+            force = rightHand.Speed * forceMultiplier;
+        else if (hand == leftHand.hand)
+            force = leftHand.Speed * forceMultiplier;
+        Debug.Log(force);
+        ballRigidbody.AddForce(force);
     }
 }
