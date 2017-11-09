@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 
-public class GameManager : NetworkBehaviour
+public class GameManager : MonoBehaviour
 {
 
     public GameObject redPlayerBallSpawn;
@@ -40,11 +40,6 @@ public class GameManager : NetworkBehaviour
         };
     }
 
-     public override void OnStartServer() {
-        SpawnBall();
-    }
-
-
     private void FixedUpdate()
     {
         ball.GetComponent<Rigidbody>().AddForce(Vector3.forward * Time.fixedDeltaTime * 3f, ForceMode.Impulse);
@@ -70,7 +65,6 @@ public class GameManager : NetworkBehaviour
     {
         // A new ball is instantiated in front of the player who lost the last point
         var newBall = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[Utility.Opp(wonLastPoint)].transform.position, Quaternion.identity);
-        NetworkServer.Spawn(newBall);
         int rand = Random.Range(0, serviceZones[wonLastPoint].Length);
         currentServiceZone = serviceZones[wonLastPoint][rand].GetComponent<ServiceZone>();
         currentServiceZone.SetIsValid(true);
@@ -83,11 +77,5 @@ public class GameManager : NetworkBehaviour
 
     public int GetPlayerScore(Utility.Team team){
         return scores[team];
-    }
-
-    private void SpawnBall()
-    {
-        ball = (GameObject)Instantiate(ballPrefab, Vector3.zero, Quaternion.identity);
-        NetworkServer.Spawn(ball);
     }
 }
