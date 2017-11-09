@@ -1,15 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class GameManager : MonoBehaviour {
+
+public class GameManager : NetworkBehaviour
+{
 
     public GameObject redPlayerBallSpawn;
     public GameObject bluePlayerBallSpawn;
     public GameObject[] redPlayerServiceZones;
     public GameObject[] bluePlayerServiceZones;
     public UIScores uiScores;
-    public GameObject ball;
+    public GameObject ballPrefab;
+    private GameObject ball;
 
     private Dictionary<Utility.Team, int> scores;
     private Dictionary<Utility.Team, GameObject> ballSpawnPoints;
@@ -36,6 +40,16 @@ public class GameManager : MonoBehaviour {
         };
     }
 
+     public override void OnStartServer() {
+        SpawnBall();
+    }
+
+
+    private void FixedUpdate()
+    {
+        ball.GetComponent<Rigidbody>().AddForce(Vector3.forward * Time.fixedDeltaTime * 3f, ForceMode.Impulse);
+    }
+
     public void IncreasePlayerScore(Utility.Team team)
     {
         int oldScore = scores[team];
@@ -55,7 +69,8 @@ public class GameManager : MonoBehaviour {
     private void StartNewPoint(Utility.Team wonLastPoint)
     {
         // A new ball is instantiated in front of the player who lost the last point
-        Instantiate(ball, ballSpawnPoints[Utility.Opp(wonLastPoint)].transform.position, Quaternion.identity);
+        var newBall = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[Utility.Opp(wonLastPoint)].transform.position, Quaternion.identity);
+        NetworkServer.Spawn(newBall);
         int rand = Random.Range(0, serviceZones[wonLastPoint].Length);
         currentServiceZone = serviceZones[wonLastPoint][rand].GetComponent<ServiceZone>();
         currentServiceZone.SetIsValid(true);
@@ -68,5 +83,11 @@ public class GameManager : MonoBehaviour {
 
     public int GetPlayerScore(Utility.Team team){
         return scores[team];
+    }
+
+    private void SpawnBall()
+    {
+        ball = (GameObject)Instantiate(ballPrefab, Vector3.zero, Quaternion.identity);
+        NetworkServer.Spawn(ball);
     }
 }
