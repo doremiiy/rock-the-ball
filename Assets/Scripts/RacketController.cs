@@ -12,6 +12,6 @@ public class RacketController : MonoBehaviour {
     }
 
 	void OnTriggerEnter (Collider collider) {
-        player.GetComponent<PlayerController>().ballHit(this.gameObject, collider);
+        player.GetComponent<PlayerController>().BallHit(this.gameObject, collider);
 	}
 }

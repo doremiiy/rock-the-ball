@@ -17,6 +17,13 @@ public class PlayerController : NetworkBehaviour{
         private Vector3 currentPosition = new Vector3();
         private Vector3 speed;
 
+        public void Refresh(float timeLapse)
+        {
+            PreviousPosition = CurrentPosition;
+            CurrentPosition = hand.transform.position;
+            Speed = (CurrentPosition - PreviousPosition) / timeLapse;
+        }
+
         public Vector3 PreviousPosition
         {
             get
@@ -59,7 +66,7 @@ public class PlayerController : NetworkBehaviour{
 
     public float forceMultiplier;
     public HandManager rightHand, leftHand;
-    public Camera camera;
+    public Camera playerCamera;
 
     private void FixedUpdate()
     {   
@@ -68,27 +75,29 @@ public class PlayerController : NetworkBehaviour{
             return;
         }
 
-        //rightHand.hand.transform.localPosition = InputTracking.GetLocalPosition(VRNode.RightHand);
-        //rightHand.hand.transform.localRotation = InputTracking.GetLocalRotation(VRNode.RightHand);
-        rightHand.PreviousPosition = rightHand.CurrentPosition;
-        rightHand.CurrentPosition = rightHand.hand.transform.position;
-        rightHand.Speed = (rightHand.CurrentPosition - rightHand.PreviousPosition) / Time.fixedDeltaTime;
+        float timeLapse = Time.fixedDeltaTime;
+        rightHand.Refresh(timeLapse);
+        leftHand.Refresh(timeLapse);
+    }
 
-        //leftHand.hand.transform.localPosition = InputTracking.GetLocalPosition(VRNode.LeftHand);
-        //leftHand.hand.transform.localRotation = InputTracking.GetLocalRotation(VRNode.LeftHand);
-        leftHand.PreviousPosition = leftHand.CurrentPosition;
-        leftHand.CurrentPosition = leftHand.hand.transform.position;
-        leftHand.Speed = (leftHand.CurrentPosition - leftHand.PreviousPosition) / Time.fixedDeltaTime;
+    // replace the temmporary update solution set up to prevent camera swaping on client connection
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        if (!isLocalPlayer && playerCamera.enabled)
+        {
+            playerCamera.enabled = false;
+        }
     }
 
     private void Update()
     {
         if (!isLocalPlayer)
         {
-            camera.enabled = false;
             return;
         }
 
+        // Test code to move the players without a htc vive
         var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
         var z = Input.GetAxis("Vertical") * Time.deltaTime * 3.0f;
 
@@ -97,7 +106,7 @@ public class PlayerController : NetworkBehaviour{
     }
 
 
-    public void ballHit(GameObject hand, Collider collider)
+    public void BallHit(GameObject hand, Collider collider)
     {
         Debug.Log("Trigger Detected");
         if (!collider.CompareTag("Ball"))
