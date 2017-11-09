@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Networking;
 
-public class TestBall : MonoBehaviour {
+
+public class Ball : NetworkBehaviour {
 
 	private Rigidbody rb;
 	public Vector3 force;
@@ -12,13 +12,15 @@ public class TestBall : MonoBehaviour {
     private bool isServed = false;
     private Utility.Team servingPlayer;
 
+    // Must be executed everywhere
     void Start () {
 		rb = GetComponent<Rigidbody>();
-		rb.AddForce (force);
-	}
+        rb.AddForce(force);
+    }
 
     void FixedUpdate()
     {
+        // Can be executed everywhere, on clients and server. No need to use the network here
         if (rb.velocity.magnitude > maxSpeed)
         {
             rb.velocity = rb.velocity.normalized * maxSpeed;
@@ -26,7 +28,13 @@ public class TestBall : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider other)
-    {   
+    {
+        // This code should be executed only on the server, no need for redundancy, the server must have authority
+        if (!isServer)
+        {
+            return;
+        }
+
         if (isServed)
         {
             // Check to see if the service is good
@@ -41,6 +49,12 @@ public class TestBall : MonoBehaviour {
                 gameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
             }
             gameManager.ResetServiceZone();
+        } else if (other.CompareTag("Ball"))
+        {
+            Debug.Log("Ball entered the Goal");
+            gameManager.IncreasePlayerScore(other.gameObject.GetComponent<Goal>().team);
+            // Destroy on every client
+            Network.Destroy(other.gameObject);
         }
     }
 
