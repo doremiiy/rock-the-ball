@@ -7,7 +7,7 @@ using UnityEngine.VR;
 
 
 
-public class PlayerController : NetworkBehaviour{
+public class PlayerController : MonoBehaviour{
 
     [System.Serializable]
     public class HandManager : System.Object
@@ -63,19 +63,10 @@ public class PlayerController : NetworkBehaviour{
 
     private void FixedUpdate()
     {   
-        if (!isLocalPlayer)
-        {
-            return;
-        }
-
-        //rightHand.hand.transform.localPosition = InputTracking.GetLocalPosition(VRNode.RightHand);
-        //rightHand.hand.transform.localRotation = InputTracking.GetLocalRotation(VRNode.RightHand);
         rightHand.PreviousPosition = rightHand.CurrentPosition;
         rightHand.CurrentPosition = rightHand.hand.transform.position;
         rightHand.Speed = (rightHand.CurrentPosition - rightHand.PreviousPosition) / Time.fixedDeltaTime;
 
-        //leftHand.hand.transform.localPosition = InputTracking.GetLocalPosition(VRNode.LeftHand);
-        //leftHand.hand.transform.localRotation = InputTracking.GetLocalRotation(VRNode.LeftHand);
         leftHand.PreviousPosition = leftHand.CurrentPosition;
         leftHand.CurrentPosition = leftHand.hand.transform.position;
         leftHand.Speed = (leftHand.CurrentPosition - leftHand.PreviousPosition) / Time.fixedDeltaTime;
@@ -83,11 +74,6 @@ public class PlayerController : NetworkBehaviour{
 
     private void Update()
     {
-        if (!isLocalPlayer)
-        {
-            camera.enabled = false;
-            return;
-        }
 
         var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
         var z = Input.GetAxis("Vertical") * Time.deltaTime * 3.0f;
