@@ -12,10 +12,24 @@ public class PlayerController : NetworkBehaviour{
     [System.Serializable]
     public class HandManager : System.Object
     {
+        public bool shouldUseVive;
         public GameObject hand;
         private Vector3 previousPosition = new Vector3();
         private Vector3 currentPosition = new Vector3();
         private Vector3 speed;
+        private VRNode vrNode;
+
+        public void Refresh(float timeLapse)
+        {
+            if (shouldUseVive)
+            {
+                hand.transform.localPosition = InputTracking.GetLocalPosition(VrNode);
+                hand.transform.localRotation = InputTracking.GetLocalRotation(VrNode);
+            }
+            PreviousPosition = CurrentPosition;
+            CurrentPosition = hand.transform.position;
+            Speed = (CurrentPosition - PreviousPosition) / Time.fixedDeltaTime;
+        }
 
         public Vector3 PreviousPosition
         {
@@ -55,11 +69,30 @@ public class PlayerController : NetworkBehaviour{
                 speed = value;
             }
         }
+
+        public VRNode VrNode
+        {
+            get
+            {
+                return vrNode;
+            }
+
+            set
+            {
+                vrNode = value;
+            }
+        }
     }
 
     public float forceMultiplier;
     public HandManager rightHand, leftHand;
     public Camera camera;
+
+    private void Start()
+    {
+        rightHand.VrNode = VRNode.RightHand;
+        leftHand.VrNode = VRNode.LeftHand;
+    }
 
     private void FixedUpdate()
     {   
@@ -68,17 +101,10 @@ public class PlayerController : NetworkBehaviour{
             return;
         }
 
-        //rightHand.hand.transform.localPosition = InputTracking.GetLocalPosition(VRNode.RightHand);
-        //rightHand.hand.transform.localRotation = InputTracking.GetLocalRotation(VRNode.RightHand);
-        rightHand.PreviousPosition = rightHand.CurrentPosition;
-        rightHand.CurrentPosition = rightHand.hand.transform.position;
-        rightHand.Speed = (rightHand.CurrentPosition - rightHand.PreviousPosition) / Time.fixedDeltaTime;
-
-        //leftHand.hand.transform.localPosition = InputTracking.GetLocalPosition(VRNode.LeftHand);
-        //leftHand.hand.transform.localRotation = InputTracking.GetLocalRotation(VRNode.LeftHand);
-        leftHand.PreviousPosition = leftHand.CurrentPosition;
-        leftHand.CurrentPosition = leftHand.hand.transform.position;
-        leftHand.Speed = (leftHand.CurrentPosition - leftHand.PreviousPosition) / Time.fixedDeltaTime;
+        float timeLapse = Time.fixedDeltaTime;
+        
+        rightHand.Refresh(timeLapse);
+        leftHand.Refresh(timeLapse);
     }
 
     private void Update()
