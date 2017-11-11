@@ -86,7 +86,7 @@ public class PlayerController : NetworkBehaviour{
 
     public float forceMultiplier;
     public HandManager rightHand, leftHand;
-    public Camera camera;
+    public Camera playerCamera;
 
     private void Start()
     {
@@ -111,7 +111,7 @@ public class PlayerController : NetworkBehaviour{
     {
         if (!isLocalPlayer)
         {
-            camera.enabled = false;
+            playerCamera.enabled = false;
             return;
         }
 
@@ -123,21 +123,18 @@ public class PlayerController : NetworkBehaviour{
     }
 
 
-    public void ballHit(GameObject hand, Collider collider)
+    public void BallHit(GameObject hand, Collider collider)
     {
-        Debug.Log("Trigger Detected");
         if (!collider.CompareTag("Ball"))
         {
             return;
         }
-        Debug.Log("Collision with the ball detected ");
         Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
         Vector3 force = new Vector3();
         if (hand == rightHand.hand)
             force = rightHand.Speed * forceMultiplier;
         else if (hand == leftHand.hand)
             force = leftHand.Speed * forceMultiplier;
-        Debug.Log(force);
         ballRigidbody.AddForce(force);
     }
 }
