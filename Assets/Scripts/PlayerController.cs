@@ -121,14 +121,20 @@ public class PlayerController : NetworkBehaviour{
         leftHand.Refresh(timeLapse);
     }
 
-    private void Update()
+    // replace the temmporary update solution set up to prevent camera swaping on client connection
+    public override void OnStartClient()
     {
-        if (!isLocalPlayer)
+        base.OnStartClient();
+        if (!isLocalPlayer && playerCamera.enabled)
         {
             playerCamera.enabled = false;
-            return;
         }
+    }
 
+    private void Update()
+    {
+
+        // Test code to move the players without a htc vive
         var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
         var z = Input.GetAxis("Vertical") * Time.deltaTime * 3.0f;
 
