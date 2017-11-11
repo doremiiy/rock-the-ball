@@ -116,7 +116,7 @@ public class PlayerController : NetworkBehaviour{
         }
 
         float timeLapse = Time.fixedDeltaTime;
-        
+
         rightHand.Refresh(timeLapse);
         leftHand.Refresh(timeLapse);
     }

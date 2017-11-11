@@ -14,6 +14,6 @@ public class RacketController : MonoBehaviour {
     }
 
 	void OnTriggerEnter (Collider collider) {
-        playerController.BallHit(this.gameObject, collider);
+       playerController.BallHit(this.gameObject, collider);
 	}
 }
