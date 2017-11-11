@@ -14,21 +14,35 @@ public class PlayerController : NetworkBehaviour{
     {
         public bool shouldUseVive;
         public GameObject hand;
+        public PlayerController playerController;
+
         private Vector3 previousPosition = new Vector3();
         private Vector3 currentPosition = new Vector3();
         private Vector3 speed;
         private VRNode vrNode;
+        private LayerMask castMask;
+
 
         public void Refresh(float timeLapse)
         {
+
             if (shouldUseVive)
             {
                 hand.transform.localPosition = InputTracking.GetLocalPosition(VrNode);
                 hand.transform.localRotation = InputTracking.GetLocalRotation(VrNode);
             }
+
             PreviousPosition = CurrentPosition;
             CurrentPosition = hand.transform.position;
-            Speed = (CurrentPosition - PreviousPosition) / Time.fixedDeltaTime;
+            Speed = (CurrentPosition - PreviousPosition) / timeLapse;
+
+            RaycastHit hit;
+            if (Physics.Linecast(previousPosition, currentPosition, out hit, castMask))
+            {
+                hand.transform.position = hit.point;
+                currentPosition = hand.transform.position;
+                playerController.BallHit(hand, hit.collider);
+            }   
         }
 
         public Vector3 PreviousPosition
