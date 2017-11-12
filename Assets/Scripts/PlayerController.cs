@@ -98,9 +98,13 @@ public class PlayerController : NetworkBehaviour{
         }
     }
 
+    public GameManager gameManager;
     public float forceMultiplier;
     public HandManager rightHand, leftHand;
     public Camera playerCamera;
+
+    [SyncVar(hook = "OnChangeballPosition")]
+    private Vector3 ballPosition;
 
     private void Start()
     {
@@ -142,19 +146,42 @@ public class PlayerController : NetworkBehaviour{
         transform.Translate(0, 0, z);
     }
 
-
+    // Works only on the server
     public void BallHit(GameObject hand, Collider collider)
     {
-        if (!collider.CompareTag("Ball"))
+        if (!isServer || !collider.CompareTag("Ball"))
         {
             return;
         }
+
         Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
+
         Vector3 force = new Vector3();
         if (hand == rightHand.hand)
             force = rightHand.Speed * forceMultiplier;
         else if (hand == leftHand.hand)
             force = leftHand.Speed * forceMultiplier;
+
+        ballPosition = collider.gameObject.transform.position;
         ballRigidbody.AddForce(force);
+        ApplyForceClients(ballRigidbody, force);
+    }
+
+    //Works only on the clients
+    private void ApplyForceClients(Rigidbody rb, Vector3 newForce)
+    {
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
+        rb.AddForce(newForce, ForceMode.Impulse);
+
+    }
+
+    // TODO handle the situation for multiple balls in the Scene
+    private void OnChangeballPosition(Vector3 newPosition)
+    {
+        gameManager.RelocateBall(newPosition);
     }
 }
