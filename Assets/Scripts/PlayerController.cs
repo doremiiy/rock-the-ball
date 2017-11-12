@@ -120,28 +120,12 @@ public class PlayerController : NetworkBehaviour{
 
     private void FixedUpdate()
     {   
-        //if (!isLocalPlayer && playerCamera.enabled)
-        //{
-        //    playerCamera.enabled = false;
-        //    return;
-        //}
 
         float timeLapse = Time.fixedDeltaTime;
 
         rightHand.Refresh(timeLapse);
         leftHand.Refresh(timeLapse);
     }
-
-    // replace the temmporary update solution set up to prevent camera swaping on client connection
-    //public override void OnStartClient()
-    //{
-    //    base.OnStartClient();
-    //    Debug.Log("Method called and isLocalPlayer =" + isLocalPlayer);
-    //    if (!isLocalPlayer && playerCamera.enabled)
-    //    {
-    //        playerCamera.enabled = false;
-    //    }
-    //}
 
     private void Update()
     {
