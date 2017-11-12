@@ -110,14 +110,21 @@ public class PlayerController : NetworkBehaviour{
     {
         rightHand.VrNode = VRNode.RightHand;
         leftHand.VrNode = VRNode.LeftHand;
+
+        if (!isLocalPlayer && playerCamera.enabled)
+        {
+            playerCamera.enabled = false;
+        }
+
     }
 
     private void FixedUpdate()
     {   
-        if (!isLocalPlayer)
-        {
-            return;
-        }
+        //if (!isLocalPlayer && playerCamera.enabled)
+        //{
+        //    playerCamera.enabled = false;
+        //    return;
+        //}
 
         float timeLapse = Time.fixedDeltaTime;
 
@@ -126,18 +133,23 @@ public class PlayerController : NetworkBehaviour{
     }
 
     // replace the temmporary update solution set up to prevent camera swaping on client connection
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        if (!isLocalPlayer && playerCamera.enabled)
-        {
-            playerCamera.enabled = false;
-        }
-    }
+    //public override void OnStartClient()
+    //{
+    //    base.OnStartClient();
+    //    Debug.Log("Method called and isLocalPlayer =" + isLocalPlayer);
+    //    if (!isLocalPlayer && playerCamera.enabled)
+    //    {
+    //        playerCamera.enabled = false;
+    //    }
+    //}
 
     private void Update()
     {
 
+        if (!isLocalPlayer)
+        {
+            return;
+        }
         // Test code to move the players without a htc vive
         var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
         var z = Input.GetAxis("Vertical") * Time.deltaTime * 3.0f;

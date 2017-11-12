@@ -15,7 +15,6 @@ public class BouncingWall : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("TEST");
         if (other.CompareTag("Ball"))
         {
             Rigidbody ballRigidbody = other.GetComponent<Rigidbody>();
