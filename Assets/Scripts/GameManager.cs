@@ -40,14 +40,15 @@ public class GameManager : NetworkBehaviour
         };
     }
 
-     public override void OnStartServer() {
+    public override void OnStartServer() {
         SpawnBall();
     }
 
 
     private void FixedUpdate()
     {
-        ball.GetComponent<Rigidbody>().AddForce(Vector3.forward * Time.fixedDeltaTime * 3f, ForceMode.Impulse);
+        // test code to check the ball movement on the cients
+        //ball.GetComponent<Rigidbody>().AddForce(Vector3.forward * Time.fixedDeltaTime * 3f, ForceMode.Impulse);
     }
 
     public void IncreasePlayerScore(Utility.Team team)
@@ -83,6 +84,11 @@ public class GameManager : NetworkBehaviour
 
     public int GetPlayerScore(Utility.Team team){
         return scores[team];
+    }
+
+    public void RelocateBall(Vector3 newPosition)
+    {
+        ball.transform.position = newPosition;
     }
 
     private void SpawnBall()
