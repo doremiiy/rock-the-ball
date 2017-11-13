@@ -16,6 +16,10 @@ public class Ball : NetworkBehaviour {
     void Start () {
 		rb = GetComponent<Rigidbody>();
         rb.AddForce(force);
+        if (maxSpeed == 0)
+        {
+            maxSpeed = 10000f;
+        }
     }
 
     void FixedUpdate()
