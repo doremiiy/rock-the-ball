@@ -103,20 +103,47 @@ public class PlayerController : NetworkBehaviour{
     public HandManager rightHand, leftHand;
     public Camera playerCamera;
 
-    [SyncVar(hook = "OnChangeballPosition")]
+    [SyncVar(hook = "OnChangeBallPosition")]
     private Vector3 ballPosition;
+    [SyncVar(hook = "OnChangeBallForce")]
+    private Vector3 ballForce;
+
+    // TODO create a data structure in the gameManager to register every ball in the field
+    public GameObject ball;
+
+    // TEST SECTION
+    public Vector3 testForce;
+
+
 
     private void Start()
     {
         rightHand.VrNode = VRNode.RightHand;
         leftHand.VrNode = VRNode.LeftHand;
 
+        // prevent camera swaping when a client joins
         if (!isLocalPlayer && playerCamera.enabled)
         {
             playerCamera.enabled = false;
         }
 
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+
     }
+
+    // TODO replace this initialization by a call to the gameManager to get the proper ball when applying a force
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        ball = GameObject.FindGameObjectWithTag("Ball");
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        ball = GameObject.FindGameObjectWithTag("Ball");
+    }
+
 
     private void FixedUpdate()
     {   
@@ -125,21 +152,52 @@ public class PlayerController : NetworkBehaviour{
 
         rightHand.Refresh(timeLapse);
         leftHand.Refresh(timeLapse);
+
+        ////if (isServer && Input.GetKeyDown(KeyCode.Space))
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    Debug.Log("ok input");
+        //    if (isServer)
+        //    {
+                
+        //        Debug.Log("OK server");
+        //        GameObject ball = GameObject.FindGameObjectWithTag("Ball");
+        //        Rigidbody rb_Ball = ball.GetComponent<Rigidbody>();
+        //        ballPosition = ball.transform.position;
+        //        ballForce = testForce;
+        //        //rb_Ball.AddForce(testForce, ForceMode.Impulse);
+        //        //ApplyForceClients(rb_Ball, testForce);
+                
+        //    }
+        //}
+            
     }
 
     private void Update()
     {
 
-        if (!isLocalPlayer)
-        {
-            return;
-        }
+        //if (!isLocalPlayer)
+        //{
+        //    return;
+        //}
+
+
         // Test code to move the players without a htc vive
         var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
         var z = Input.GetAxis("Vertical") * Time.deltaTime * 3.0f;
 
         transform.Rotate(0, x, 0);
         transform.Translate(0, 0, z);
+
+        if (isServer && Input.GetKeyDown(KeyCode.Space))
+        {
+            GameObject ball = GameObject.FindGameObjectWithTag("Ball");
+            Rigidbody rb_Ball = ball.GetComponent<Rigidbody>();
+            ballPosition = ball.transform.position;
+            ballForce = testForce;
+            //rb_Ball.AddForce(testForce, ForceMode.Impulse);
+            //ApplyForceClients(rb_Ball, testForce);
+        }
     }
 
     // Works only on the server
@@ -152,15 +210,14 @@ public class PlayerController : NetworkBehaviour{
 
         Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
 
-        Vector3 force = new Vector3();
         if (hand == rightHand.hand)
-            force = rightHand.Speed * forceMultiplier;
+            ballForce = rightHand.Speed * forceMultiplier;
         else if (hand == leftHand.hand)
-            force = leftHand.Speed * forceMultiplier;
+            ballForce = leftHand.Speed * forceMultiplier;
 
-        ballPosition = collider.gameObject.transform.position;
-        ballRigidbody.AddForce(force);
-        ApplyForceClients(ballRigidbody, force);
+        ballPosition = ball.transform.position;
+        //ballRigidbody.AddForce(force);
+        //ApplyForceClients(ballRigidbody, force);
     }
 
     //Works only on the clients
@@ -176,8 +233,21 @@ public class PlayerController : NetworkBehaviour{
     }
 
     // TODO handle the situation for multiple balls in the Scene
-    private void OnChangeballPosition(Vector3 newPosition)
+
+    // Should only be called in the server and the localPlayer
+    private void OnChangeBallPosition(Vector3 newPosition)
     {
-        gameManager.RelocateBall(newPosition);
+        if (isLocalPlayer || isServer)
+        {
+            gameManager.RelocateBall(newPosition);
+        }
+    }
+
+    private void OnChangeBallForce(Vector3 newForce)
+    {
+        if (isLocalPlayer || isServer)
+        {
+            ball.GetComponent<Rigidbody>().AddForce(newForce, ForceMode.Impulse);  
+        }
     }
 }
