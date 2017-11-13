@@ -13,7 +13,8 @@ public class GameManager : NetworkBehaviour
     public GameObject[] bluePlayerServiceZones;
     public UIScores uiScores;
     public GameObject ballPrefab;
-    private GameObject ball;
+
+    public GameObject ball;
 
     private Dictionary<Utility.Team, int> scores;
     private Dictionary<Utility.Team, GameObject> ballSpawnPoints;
@@ -44,9 +45,17 @@ public class GameManager : NetworkBehaviour
         SpawnBall();
     }
 
+    // Get the state of the SyncVar
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        ball = GameObject.FindGameObjectWithTag("Ball");
+    }
+
 
     private void FixedUpdate()
     {
+
         // test code to check the ball movement on the cients
         //ball.GetComponent<Rigidbody>().AddForce(Vector3.forward * Time.fixedDeltaTime * 3f, ForceMode.Impulse);
     }
