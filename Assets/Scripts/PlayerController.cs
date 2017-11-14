@@ -103,8 +103,9 @@ public class PlayerController : NetworkBehaviour{
     public HandManager rightHand, leftHand;
     public Camera playerCamera;
 
-    [SyncVar(hook = "OnChangeBallPosition")]
-    private bool ballPositionTrigger;
+    //[SyncVar(hook = "OnChangeBallPosition")]
+    //private bool ballPositionTrigger;
+    [SyncVar(hook = "OnChangeBallPosition") ]
     private Vector3 ballPosition;
     [SyncVar(hook = "OnChangeBallForce")]
     private bool ballForceTrigger;
@@ -178,9 +179,9 @@ public class PlayerController : NetworkBehaviour{
             GameObject ball = GameObject.FindGameObjectWithTag("Ball");
             Rigidbody rb_Ball = ball.GetComponent<Rigidbody>();
             ballPosition = ball.transform.position;
-            ballPositionTrigger = !ballPositionTrigger;
             ballForceTrigger = !ballForceTrigger;  
         }
+        Debug.Log(ball.GetComponent<Rigidbody>().velocity);
     }
 
     // Works only on the server
@@ -219,11 +220,11 @@ public class PlayerController : NetworkBehaviour{
     // TODO Check that the sync variable are actually synched
 
     // Should only be called in the server and the localPlayer
-    private void OnChangeBallPosition(bool newVal)
+    private void OnChangeBallPosition(Vector3 newBallPosition)
     {
         if ( (isServer && isLocalPlayer) || (!isServer && !isLocalPlayer) )
         {
-            gameManager.RelocateBall(ballPosition);
+            gameManager.RelocateBall(newBallPosition);
         }
     }
 
