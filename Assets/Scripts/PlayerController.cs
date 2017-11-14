@@ -160,10 +160,10 @@ public class PlayerController : NetworkBehaviour{
     private void Update()
     {
 
-        //if (!isLocalPlayer)
-        //{
-        //    return;
-        //}
+        if (!isLocalPlayer)
+        {
+            return;
+        }
 
 
         // Test code to move the players without a htc vive
@@ -173,6 +173,7 @@ public class PlayerController : NetworkBehaviour{
         transform.Rotate(0, x, 0);
         transform.Translate(0, 0, z);
 
+        // Test code to apply a force on the ball without a htc Vive
         if (isServer && isLocalPlayer && Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log("OK");
@@ -181,7 +182,6 @@ public class PlayerController : NetworkBehaviour{
             ballPosition = ball.transform.position;
             ballForceTrigger = !ballForceTrigger;  
         }
-        Debug.Log(ball.GetComponent<Rigidbody>().velocity);
     }
 
     // Works only on the server
@@ -200,40 +200,19 @@ public class PlayerController : NetworkBehaviour{
             ballForce = leftHand.Speed * forceMultiplier;
 
         ballPosition = ball.transform.position;
-        //ballRigidbody.AddForce(force);
-        //ApplyForceClients(ballRigidbody, force);
-    }
-
-    //Works only on the clients
-    private void ApplyForceClients(Rigidbody rb, Vector3 newForce)
-    {
-        if (!isLocalPlayer)
-        {
-            return;
-        }
-
-        rb.AddForce(newForce, ForceMode.Impulse);
-
+        // TODO replace the force application by an update of the ball's velocity
     }
 
     // TODO handle the situation for multiple balls in the Scene
-    // TODO Check that the sync variable are actually synched
 
-    // Should only be called in the server and the localPlayer
+    // The syncVar are changed only in 1 playerController => No condition to check. 
     private void OnChangeBallPosition(Vector3 newBallPosition)
     {
-        if ( (isServer && isLocalPlayer) || (!isServer && !isLocalPlayer) )
-        {
-            gameManager.RelocateBall(newBallPosition);
-        }
+        gameManager.RelocateBall(newBallPosition);
     }
 
     private void OnChangeBallForce(bool newVal)
     {
-        if ((isServer && isLocalPlayer) || (!isServer && !isLocalPlayer))
-        {
-            Debug.Log("OnChangeBallForce is ok , localPlayer is :" + isLocalPlayer + "and server is :" + isServer + "newForce is : " + ballForce);
-            ball.GetComponent<Rigidbody>().AddForce(ballForce, ForceMode.Impulse);  
-        }
+        ball.GetComponent<Rigidbody>().AddForce(ballForce, ForceMode.Impulse);  
     }
 }
