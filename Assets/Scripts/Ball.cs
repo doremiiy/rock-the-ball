@@ -53,7 +53,7 @@ public class Ball : NetworkBehaviour {
                 gameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
             }
             gameManager.ResetServiceZone();
-        } else if (other.CompareTag("Ball"))
+        } else if (other.CompareTag("Goal"))
         {
             Debug.Log("Ball entered the Goal");
             gameManager.IncreasePlayerScore(other.gameObject.GetComponent<Goal>().team);
