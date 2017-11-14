@@ -14,13 +14,26 @@ public class Ball : NetworkBehaviour {
 
     // Must be executed everywhere
     void Start () {
-		rb = GetComponent<Rigidbody>();
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        rb = GetComponent<Rigidbody>();
         rb.AddForce(force);
         if (maxSpeed == 0)
         {
             maxSpeed = 10000f;
         }
     }
+
+    //public override void OnStartClient()
+    //{
+    //    base.OnStartClient();
+    //    gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+    //}
+
+    //public override void OnStartServer()
+    //{
+    //    base.OnStartServer();
+    //    gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+    //}
 
     void FixedUpdate()
     {
@@ -53,7 +66,7 @@ public class Ball : NetworkBehaviour {
                 gameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
             }
             gameManager.ResetServiceZone();
-        } else if (other.CompareTag("Goal"))
+        } else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
         {
             Debug.Log("Ball entered the Goal");
             gameManager.IncreasePlayerScore(other.gameObject.GetComponent<Goal>().team);
