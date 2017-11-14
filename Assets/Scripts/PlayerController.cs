@@ -14,8 +14,8 @@ public class PlayerController : NetworkBehaviour{
     {
         public bool shouldUseVive;
         public GameObject hand;
-        public PlayerController playerController;
 
+		private PlayerController playerController;
         private Vector3 previousPosition = new Vector3();
         private Vector3 currentPosition = new Vector3();
         private Vector3 speed;
@@ -25,7 +25,6 @@ public class PlayerController : NetworkBehaviour{
 
         public void Refresh(float timeLapse)
         {
-
             if (shouldUseVive)
             {
                 hand.transform.localPosition = InputTracking.GetLocalPosition(VrNode);
@@ -96,6 +95,16 @@ public class PlayerController : NetworkBehaviour{
                 vrNode = value;
             }
         }
+
+		public PlayerController PlayerController {
+			get {
+				return playerController;
+			}
+			set
+			{
+				playerController = value;
+			}
+		}
     }
 
     public GameManager gameManager;
@@ -123,6 +132,7 @@ public class PlayerController : NetworkBehaviour{
     {
         rightHand.VrNode = VRNode.RightHand;
         leftHand.VrNode = VRNode.LeftHand;
+		rightHand.PlayerController = leftHand.PlayerController = this;
 
         // prevent camera swaping when a client joins
         if (!isLocalPlayer && playerCamera.enabled || isServer)
