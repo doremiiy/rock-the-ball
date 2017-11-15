@@ -69,7 +69,7 @@ public class Ball : NetworkBehaviour {
         } else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
         {
             Debug.Log("Ball entered the Goal");
-            gameManager.IncreasePlayerScore(other.gameObject.GetComponent<Goal>().team);
+            gameManager.IncreasePlayerScore(Utility.Opp(other.gameObject.GetComponent<Goal>().team));
             // Destroy on every client
             Network.Destroy(other.gameObject);
         }
