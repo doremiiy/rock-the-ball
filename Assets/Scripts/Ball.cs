@@ -21,6 +21,7 @@ public class Ball : NetworkBehaviour {
         {
             maxSpeed = 10000f;
         }
+        isServed = true;
     }
 
     //public override void OnStartClient()
@@ -37,7 +38,7 @@ public class Ball : NetworkBehaviour {
 
     void FixedUpdate()
     {
-        // Can be executed everywhere, on clients and server. No need to use the network here
+        // Speed cap
         if (rb.velocity.magnitude > maxSpeed)
         {
             rb.velocity = rb.velocity.normalized * maxSpeed;
@@ -46,7 +47,7 @@ public class Ball : NetworkBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        // This code is exectued on the server only
+        // Server only for collision detection
         if (!isServer)
         {
             return;
@@ -55,7 +56,7 @@ public class Ball : NetworkBehaviour {
         if (isServed)
         {
             // Check to see if the service is good
-            if (other.CompareTag("ServiceZone") && other.GetComponent<ServiceZone>().GetIsValid())
+            if (other.CompareTag("ServiceZone") && other.GetComponent<ServiceZone>().IsValid)
             {
                 Debug.Log("Service in");
                 isServed = false;
