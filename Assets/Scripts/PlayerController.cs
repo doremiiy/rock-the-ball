@@ -111,6 +111,7 @@ public class PlayerController : NetworkBehaviour{
     public float forceMultiplier;
     public HandManager rightHand, leftHand;
     public Camera playerCamera;
+    public Utility.Team team;
 
     //[SyncVar(hook = "OnChangeBallPosition")]
     //private bool ballPositionTrigger;
@@ -225,6 +226,38 @@ public class PlayerController : NetworkBehaviour{
 
     private void OnChangeBallForce(bool newVal)
     {
-        ball.GetComponent<Rigidbody>().AddForce(ballForce, ForceMode.Impulse);  
+        ball.GetComponent<Rigidbody>().AddForce(ballForce, ForceMode.Impulse);
+    }
+
+    // Only checked by the server
+    private void OnTriggerStay(Collider other)
+    {
+        if (!isServer)
+        {
+            return;
+        }
+
+        if (gameManager.IsWaitingForPlayers && other.CompareTag("WaitingZone"))
+        {
+            //TODO vive controllers trigger
+            if (gameManager.MustStartNewPoint && Input.GetKeyDown(KeyCode.Return))
+            {
+                gameManager.PlayersReady[team] = true;
+            }
+        }
+    }
+
+    // Only checked by the server
+    private void OnTriggerExit(Collider other)
+    {
+        if (!isServer)
+        {
+            return;
+        }
+
+        if (other.CompareTag("WaitingZone") && gameManager.MustStartNewPoint)
+        {
+            gameManager.PlayersReady[team] = false;
+        }
     }
 }

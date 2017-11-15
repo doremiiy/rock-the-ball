@@ -29,12 +29,63 @@ public class GameManager : NetworkBehaviour
     private bool triggerPointWin;
     [SyncVar]
     private Utility.Team lastPointWinner;
- 
+
+    private Dictionary<Utility.Team, bool> playersReady;
+    private bool isWaitingForPlayers;
+    private bool mustStartNewPoint;
+
+    public bool IsWaitingForPlayers
+    {
+        get
+        {
+            return isWaitingForPlayers;
+        }
+
+        set
+        {
+            isWaitingForPlayers = value;
+        }
+    }
+
+    public Dictionary<Utility.Team, bool> PlayersReady
+    {
+        get
+        {
+            return playersReady;
+        }
+
+        set
+        {
+            // TODO check if it works
+            playersReady = value;
+            if (!PlayersReady.ContainsValue(false))
+            {
+                isWaitingForPlayers = false; 
+            } else
+            {
+                isWaitingForPlayers = true;
+            }
+        }
+    }
+
+    public bool MustStartNewPoint
+    {
+        get
+        {
+            return mustStartNewPoint;
+        }
+
+        set
+        {
+            mustStartNewPoint = value;
+        }
+    }
 
     // Clients and server
     private void Start()
     {
         // TODO factorize these tree dictionnary in one
+        // TODO initialize the dictionnaries by iterating on tne enum
         scores = new Dictionary<Utility.Team, int>
         {
             { Utility.Team.blue, 0 },
@@ -50,6 +101,24 @@ public class GameManager : NetworkBehaviour
             { Utility.Team.blue, bluePlayerServiceZones},
             { Utility.Team.red, redPlayerServiceZones}
         };
+        PlayersReady = new Dictionary<Utility.Team, bool>
+        {
+            { Utility.Team.blue, true},
+            { Utility.Team.red, true}
+        };
+    }
+
+    private void Update()
+    {
+        if (!isServer)
+        {
+            return;
+        }
+
+        if (MustStartNewPoint && !IsWaitingForPlayers)
+        {
+            // TODO Place the ball properly and wait for the service
+        }
     }
 
     public override void OnStartServer() {
@@ -136,6 +205,12 @@ public class GameManager : NetworkBehaviour
     private void OnChangeTriggerPointWin(bool newVal)
     {
         // TODO launch the sequence for a new point
+        // wait for the players to go in their waiting zone
+        foreach (Utility.Team team in Enum.GetValues(typeof(Utility.Team)))
+        {
+            PlayersReady[team] = false;
+        }
+        IsWaitingForPlayers = true;
     }
 
     private void OnChangeLastPointWinner(Utility.Team newTeam)
