@@ -84,7 +84,7 @@ public class GameManager : NetworkBehaviour
     // Clients and server
     private void Start()
     {
-        // TODO factorize these tree dictionnary in one
+        // TODO factorize these tree dictionnaries in one
         // TODO initialize the dictionnaries by iterating on tne enum
         scores = new Dictionary<Utility.Team, int>
         {
@@ -117,12 +117,15 @@ public class GameManager : NetworkBehaviour
 
         if (MustStartNewPoint && !IsWaitingForPlayers)
         {
-            // TODO Place the ball properly and wait for the service
+            StartNewPoint();
         }
     }
 
-    public override void OnStartServer() {
-        SpawnBall();
+    public override void OnStartServer()
+    {
+        // pick a random team in the enum to start the match
+        Utility.Team randomTeam = Utility.RandomTeam();
+        SpawnBall(ballSpawnPoints[randomTeam].transform.position);
     }
 
     // Get the local Ball
@@ -151,25 +154,30 @@ public class GameManager : NetworkBehaviour
         }
         else
         {
-            StartNewPoint(team);
             triggerPointWin = !triggerPointWin;
-            // TODO point's ending
         }
     }
 
-    private void StartNewPoint(Utility.Team wonLastPoint)
+    private void StartNewPoint()
     {
         // A new ball is instantiated in front of the player who lost the last point
-        var newBall = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[Utility.Opp(wonLastPoint)].transform.position, Quaternion.identity);
+        var newBall = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[Utility.Opp(lastPointWinner)].transform.position, Quaternion.identity);
         NetworkServer.Spawn(newBall);
-        int rand = UnityEngine.Random.Range(0, serviceZones[wonLastPoint].Length);
-        currentServiceZone = serviceZones[wonLastPoint][rand].GetComponent<ServiceZone>();
-        currentServiceZone.SetIsValid(true);
+        ResetServiceZone();
+        currentServiceZone = RandomServiceZone();
+        currentServiceZone.IsValid = true;
     }
 
     public void ResetServiceZone()
     {
-        currentServiceZone.SetIsValid(false);
+        currentServiceZone.IsValid = false;
+    }
+
+    private ServiceZone RandomServiceZone()
+    {
+        int rand = UnityEngine.Random.Range(0, serviceZones[lastPointWinner].Length);
+        currentServiceZone = serviceZones[lastPointWinner][rand].GetComponent<ServiceZone>();
+        return currentServiceZone;
     }
 
     public int GetPlayerScore(Utility.Team team){
@@ -181,9 +189,9 @@ public class GameManager : NetworkBehaviour
         ball.transform.position = newPosition;
     }
 
-    private void SpawnBall()
+    private void SpawnBall(Vector3 position)
     {
-        ball = (GameObject)Instantiate(ballPrefab, Vector3.zero, Quaternion.identity);
+        ball = (GameObject)Instantiate(ballPrefab, position, Quaternion.identity);
         NetworkServer.Spawn(ball);
     }
 
