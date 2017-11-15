@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Utility {
-    public enum Team { blue, red };
 
+    public enum Team { blue, red };
+    static public int winningScore = 15;
     static public Team Opp(Team team)
     {
         Team opp;
