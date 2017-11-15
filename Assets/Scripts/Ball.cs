@@ -46,7 +46,7 @@ public class Ball : NetworkBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        // This code should be executed only on the server, no need for redundancy, the server must have authority
+        // This code is exectued on the server only
         if (!isServer)
         {
             return;
@@ -66,6 +66,7 @@ public class Ball : NetworkBehaviour {
                 gameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
             }
             gameManager.ResetServiceZone();
+        // Check for a potential goal
         } else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
         {
             Debug.Log("Ball entered the Goal");
