@@ -12,7 +12,21 @@ public class Ball : NetworkBehaviour {
     private bool isServed = false;
     private Utility.Team servingPlayer;
 
+    public Utility.Team ServingPlayer
+    {
+        get
+        {
+            return servingPlayer;
+        }
+
+        set
+        {
+            servingPlayer = value;
+        }
+    }
+
     // Must be executed everywhere
+    // Warning, maybe smarter to do in the OnStart methods
     void Start () {
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         rb = GetComponent<Rigidbody>();
@@ -53,6 +67,7 @@ public class Ball : NetworkBehaviour {
             return;
         }
 
+        // TODO if the opposite player hit the ball, he loses the point
         if (isServed)
         {
             // Check to see if the service is good
@@ -64,35 +79,14 @@ public class Ball : NetworkBehaviour {
             else
             {
                 Debug.Log("Service out");
-                gameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
+                gameManager.IncreasePlayerScore(Utility.Opp(ServingPlayer));
             }
             gameManager.ResetServiceZone();
-        // Check for a potential goal
-        } else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
+            // Check for a potential goal
+        }
+        else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
         {
             gameManager.IncreasePlayerScore(Utility.Opp(other.gameObject.GetComponent<Goal>().team));
-            // Destroy on every client
-            Network.Destroy(other.gameObject);
         }
-    }
-
-    public bool GetIsServed()
-    {
-        return isServed;
-    }
-
-    public void SetIsServed(bool newVal)
-    {
-        isServed = newVal;
-    }
-
-    public Utility.Team GetServingPlayer()
-    {
-        return servingPlayer;
-    }
-
-    public void SetServingPlayer(Utility.Team newVal)
-    {
-        servingPlayer = newVal;
     }
 }

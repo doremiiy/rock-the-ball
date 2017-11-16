@@ -93,7 +93,7 @@ public class GameManager : NetworkBehaviour
             return;
         }
 
-        if (MustStartNewPoint && !IsWaitingForPlayers)
+        if (MustStartNewPoint && !IsWaitingForPlayers || Input.GetKeyDown(KeyCode.Return))
         {
             StartNewPoint();
         }
@@ -166,10 +166,11 @@ public class GameManager : NetworkBehaviour
         lastPointWinner = team;
         server = Utility.Opp(lastPointWinner);
         scores[team]++;
-        uiScores.UpdateScores();
+        Network.Destroy(ball);
+        //uiScores.UpdateScores();
         if (scores[team] == Utility.winningScore)
         {
-            uiScores.DisplayWinText(team);
+            //uiScores.DisplayWinText(team);
             triggerGameWin = !triggerGameWin;
             // TODO End of the game
         }
@@ -186,20 +187,20 @@ public class GameManager : NetworkBehaviour
         NetworkServer.Spawn(newBall);
         currentServiceZone = RandomServiceZone();
         currentServiceZone.IsValid = true;
-        // Find the index of the service zone in the array
-        currentServiceZoneIndex = Array.FindIndex(serviceZones[Utility.Opp(server)], zone => zone.GetComponent<ServiceZone>().IsValid);
     }
 
     public void ResetServiceZone()
     {
         currentServiceZone.IsValid = false;
-        serviceZones[Utility.Opp(server)][currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
+        // Reset value
+        currentServiceZoneIndex = -1;
+        //serviceZones[Utility.Opp(server)][currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
     }
 
     private ServiceZone RandomServiceZone()
     {
-        int rand = UnityEngine.Random.Range(0, serviceZones[Utility.Opp(server)].Length);
-        currentServiceZone = serviceZones[Utility.Opp(server)][rand].GetComponent<ServiceZone>();
+        currentServiceZoneIndex = UnityEngine.Random.Range(0, serviceZones[Utility.Opp(server)].Length);
+        currentServiceZone = serviceZones[Utility.Opp(server)][currentServiceZoneIndex].GetComponent<ServiceZone>();
         return currentServiceZone;
     }
 
@@ -215,6 +216,7 @@ public class GameManager : NetworkBehaviour
     private void SpawnBall(Vector3 position)
     {
         ball = (GameObject)Instantiate(ballPrefab, position, Quaternion.identity);
+        ball.GetComponent<Ball>().ServingPlayer = server;
         NetworkServer.Spawn(ball);
     }
 
@@ -227,7 +229,7 @@ public class GameManager : NetworkBehaviour
         //    if (newScores[team] > scores[team])
         //    {
         //        Debug.Log("Team :" + team + " won the last point");
-        //        lastPointWinner = team;
+        //        lastPointWinner =   team;
         //        break;
         //    }
         //}
@@ -242,6 +244,7 @@ public class GameManager : NetworkBehaviour
             PlayersReady[team] = false;
         }
         IsWaitingForPlayers = true;
+        MustStartNewPoint = true;
     }
 
     private void OnChangeLastPointWinner(Utility.Team newTeam)
@@ -251,8 +254,16 @@ public class GameManager : NetworkBehaviour
 
     private void OnChangeCurrentServiceZoneIndex(int newIndex)
     {
-        // set the new value
-        Debug.Log("Mesh renderer should be enabled");
-        serviceZones[Utility.Opp(server)][newIndex].GetComponent<MeshRenderer>().enabled = true;
+        // TODO check that this logic works also on the server
+        if (newIndex == -1)
+        {
+            //Debug.Log(currentServiceZoneIndex);
+            // Remove the old service zone
+            serviceZones[Utility.Opp(server)][currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
+        } else
+        {
+            // Set the new service zone
+            serviceZones[Utility.Opp(server)][newIndex].GetComponent<MeshRenderer>().enabled = true;
+        }
     }
 }

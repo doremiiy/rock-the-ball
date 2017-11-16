@@ -240,7 +240,7 @@ public class PlayerController : NetworkBehaviour{
         if (gameManager.IsWaitingForPlayers && other.CompareTag("WaitingZone"))
         {
             //TODO vive controllers trigger
-            if (gameManager.MustStartNewPoint && Input.GetKeyDown(KeyCode.Return))
+            if (Input.GetKeyDown(KeyCode.Return))
             {
                 gameManager.PlayersReady[team] = true;
             }
