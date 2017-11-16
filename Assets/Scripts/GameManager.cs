@@ -22,6 +22,8 @@ public class GameManager : NetworkBehaviour
     private Dictionary<Utility.Team, GameObject> ballSpawnPoints;
     private Dictionary<Utility.Team, GameObject[]> serviceZones;
     private ServiceZone currentServiceZone;
+    [SyncVar]
+    private int currentServiceZoneIndex;
   
     [SyncVar]
     private bool triggerGameWin;
@@ -29,6 +31,8 @@ public class GameManager : NetworkBehaviour
     private bool triggerPointWin;
     [SyncVar]
     private Utility.Team lastPointWinner;
+    [SyncVar]
+    private Utility.Team server;
 
     private Dictionary<Utility.Team, bool> playersReady;
     private bool isWaitingForPlayers;
@@ -147,6 +151,7 @@ public class GameManager : NetworkBehaviour
     public void IncreasePlayerScore(Utility.Team team)
     {
         lastPointWinner = team;
+        server = Utility.Opp(lastPointWinner);
         scores[team]++;
         uiScores.UpdateScores();
         if (scores[team] == Utility.winningScore)
@@ -164,22 +169,24 @@ public class GameManager : NetworkBehaviour
     private void StartNewPoint()
     {
         // A new ball is instantiated in front of the player who lost the last point
-        var newBall = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[Utility.Opp(lastPointWinner)].transform.position, Quaternion.identity);
+        var newBall = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
         NetworkServer.Spawn(newBall);
-        ResetServiceZone();
         currentServiceZone = RandomServiceZone();
         currentServiceZone.IsValid = true;
+        // Find the index of the service zone in the array
+        currentServiceZoneIndex = Array.FindIndex(serviceZones[Utility.Opp(server)], zone => zone.GetComponent<ServiceZone>().IsValid);
     }
 
     public void ResetServiceZone()
     {
         currentServiceZone.IsValid = false;
+        serviceZones[Utility.Opp(server)][currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
     }
 
     private ServiceZone RandomServiceZone()
     {
-        int rand = UnityEngine.Random.Range(0, serviceZones[lastPointWinner].Length);
-        currentServiceZone = serviceZones[lastPointWinner][rand].GetComponent<ServiceZone>();
+        int rand = UnityEngine.Random.Range(0, serviceZones[Utility.Opp(server)].Length);
+        currentServiceZone = serviceZones[Utility.Opp(server)][rand].GetComponent<ServiceZone>();
         return currentServiceZone;
     }
 
@@ -227,5 +234,11 @@ public class GameManager : NetworkBehaviour
     private void OnChangeLastPointWinner(Utility.Team newTeam)
     {
         scores[newTeam]++;
+    }
+
+    private void OnChangeCurrentServiceZoneIndex(int newIndex)
+    {
+        // set the new value
+        serviceZones[Utility.Opp(server)][newIndex].GetComponent<MeshRenderer>().enabled = true;
     }
 }

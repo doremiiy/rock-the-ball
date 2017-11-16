@@ -66,6 +66,7 @@ public class Ball : NetworkBehaviour {
                 Debug.Log("Service out");
                 gameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
             }
+            gameManager.ResetServiceZone();
         // Check for a potential goal
         } else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
         {
