@@ -22,9 +22,10 @@ public class GameManager : NetworkBehaviour
     private Dictionary<Utility.Team, GameObject> ballSpawnPoints;
     private Dictionary<Utility.Team, GameObject[]> serviceZones;
     private ServiceZone currentServiceZone;
-    [SyncVar]
+
+    [SyncVar(hook = "OnChangeCurrentServiceZoneIndex")]
     private int currentServiceZoneIndex;
-  
+
     [SyncVar]
     private bool triggerGameWin;
     [SyncVar(hook = "OnChangeTriggerPointWin")]
@@ -85,18 +86,6 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    // Clients and server
-    private void Start()
-    {
-        // TODO factorize these tree dictionnaries in one
-        // TODO initialize the dictionnaries by iterating on tne enum
-        scores = new Dictionary<Utility.Team, int>
-        {
-            { Utility.Team.blue, 0 },
-            { Utility.Team.red, 0 }
-        };
-    }
-
     private void Update()
     {
         if (!isServer)
@@ -113,26 +102,35 @@ public class GameManager : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-
-        ballSpawnPoints = new Dictionary<Utility.Team, GameObject>
-        {
-            { Utility.Team.blue, bluePlayerBallSpawn },
-            { Utility.Team.red, redPlayerBallSpawn }
-        };
-        serviceZones = new Dictionary<Utility.Team, GameObject[]>
-        {
-            { Utility.Team.blue, bluePlayerServiceZones},
-            { Utility.Team.red, redPlayerServiceZones}
-        };
+        // Only accessed by the server
         PlayersReady = new Dictionary<Utility.Team, bool>
         {
             { Utility.Team.blue, true},
             { Utility.Team.red, true}
         };
 
+        // Only accessed by the server
+        ballSpawnPoints = new Dictionary<Utility.Team, GameObject>
+        {
+            { Utility.Team.blue, bluePlayerBallSpawn },
+            { Utility.Team.red, redPlayerBallSpawn }
+        };
+
+        serviceZones = new Dictionary<Utility.Team, GameObject[]>
+        {
+            { Utility.Team.blue, bluePlayerServiceZones},
+            { Utility.Team.red, redPlayerServiceZones}
+        };
+
+        scores = new Dictionary<Utility.Team, int>
+        {
+            { Utility.Team.blue, 0 },
+            { Utility.Team.red, 0 }
+        };
+
         // pick a random team in the enum to start the match
-        Utility.Team randomTeam = Utility.RandomTeam();
-        SpawnBall(ballSpawnPoints[randomTeam].transform.position);
+        server = Utility.RandomTeam();
+        StartNewPoint();
     }
 
     // Get the local Ball
@@ -140,6 +138,21 @@ public class GameManager : NetworkBehaviour
     {
         base.OnStartClient();
         ball = GameObject.FindGameObjectWithTag("Ball");
+
+        serviceZones = new Dictionary<Utility.Team, GameObject[]>
+        {
+            { Utility.Team.blue, bluePlayerServiceZones},
+            { Utility.Team.red, redPlayerServiceZones}
+        };
+
+        scores = new Dictionary<Utility.Team, int>
+        {
+            { Utility.Team.blue, 0 },
+            { Utility.Team.red, 0 }
+        };
+
+        serviceZones[Utility.Opp(server)][currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
+
     }
 
     // TEST CODE to check the ball movement on the cients
@@ -239,6 +252,7 @@ public class GameManager : NetworkBehaviour
     private void OnChangeCurrentServiceZoneIndex(int newIndex)
     {
         // set the new value
+        Debug.Log("Mesh renderer should be enabled");
         serviceZones[Utility.Opp(server)][newIndex].GetComponent<MeshRenderer>().enabled = true;
     }
 }
