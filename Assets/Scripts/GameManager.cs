@@ -91,21 +91,6 @@ public class GameManager : NetworkBehaviour
             { Utility.Team.blue, 0 },
             { Utility.Team.red, 0 }
         };
-        ballSpawnPoints = new Dictionary<Utility.Team, GameObject>
-        {
-            { Utility.Team.blue, bluePlayerBallSpawn },
-            { Utility.Team.red, redPlayerBallSpawn }
-        };
-        serviceZones = new Dictionary<Utility.Team, GameObject[]>
-        {
-            { Utility.Team.blue, bluePlayerServiceZones},
-            { Utility.Team.red, redPlayerServiceZones}
-        };
-        PlayersReady = new Dictionary<Utility.Team, bool>
-        {
-            { Utility.Team.blue, true},
-            { Utility.Team.red, true}
-        };
     }
 
     private void Update()
@@ -123,6 +108,24 @@ public class GameManager : NetworkBehaviour
 
     public override void OnStartServer()
     {
+        base.OnStartServer();
+
+        ballSpawnPoints = new Dictionary<Utility.Team, GameObject>
+        {
+            { Utility.Team.blue, bluePlayerBallSpawn },
+            { Utility.Team.red, redPlayerBallSpawn }
+        };
+        serviceZones = new Dictionary<Utility.Team, GameObject[]>
+        {
+            { Utility.Team.blue, bluePlayerServiceZones},
+            { Utility.Team.red, redPlayerServiceZones}
+        };
+        PlayersReady = new Dictionary<Utility.Team, bool>
+        {
+            { Utility.Team.blue, true},
+            { Utility.Team.red, true}
+        };
+
         // pick a random team in the enum to start the match
         Utility.Team randomTeam = Utility.RandomTeam();
         SpawnBall(ballSpawnPoints[randomTeam].transform.position);
