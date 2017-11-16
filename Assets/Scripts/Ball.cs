@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 public class Ball : NetworkBehaviour {
 
 	private Rigidbody rb;
-	public Vector3 force;
+	public Vector3 testForce;
     public float maxSpeed;
     public GameManager gameManager;
 
@@ -16,7 +16,7 @@ public class Ball : NetworkBehaviour {
     void Start () {
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         rb = GetComponent<Rigidbody>();
-        rb.AddForce(force);
+        //rb.AddForce(testForce);
         if (maxSpeed == 0)
         {
             maxSpeed = 10000f;
@@ -66,11 +66,9 @@ public class Ball : NetworkBehaviour {
                 Debug.Log("Service out");
                 gameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
             }
-            gameManager.ResetServiceZone();
         // Check for a potential goal
         } else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
         {
-            Debug.Log("Ball entered the Goal");
             gameManager.IncreasePlayerScore(Utility.Opp(other.gameObject.GetComponent<Goal>().team));
             // Destroy on every client
             Network.Destroy(other.gameObject);
