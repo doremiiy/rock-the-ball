@@ -135,7 +135,7 @@ public class PlayerController : NetworkBehaviour{
 		rightHand.PlayerController = leftHand.PlayerController = this;
 
         // prevent camera swaping when a client joins
-        if (!isLocalPlayer && playerCamera.enabled || isServer)
+        if (!isLocalPlayer && playerCamera.enabled)
         {
             playerCamera.enabled = false;
         }
