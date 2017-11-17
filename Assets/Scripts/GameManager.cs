@@ -38,6 +38,8 @@ public class GameManager : NetworkBehaviour
     private Dictionary<Utility.Team, bool> playersReady;
     private bool isWaitingForPlayers;
     private bool mustStartNewPoint;
+    [SyncVar (hook ="OnChangeTriggerNewBall")]
+    private bool triggerNewBall;
 
     public bool IsWaitingForPlayers
     {
@@ -96,6 +98,8 @@ public class GameManager : NetworkBehaviour
 
         if (MustStartNewPoint && !IsWaitingForPlayers || Input.GetKeyDown(KeyCode.Return))
         {
+            Debug.Log("Test ok, starting a new point");
+            MustStartNewPoint = false;
             StartNewPoint();
         }
     }
@@ -188,6 +192,8 @@ public class GameManager : NetworkBehaviour
         NetworkServer.Spawn(newBall);
         currentServiceZone = RandomServiceZone();
         currentServiceZone.IsValid = true;
+        newBall.GetComponent<Ball>().ServingPlayer = server;
+        triggerNewBall = !triggerNewBall;
     }
 
     public void ResetServiceZone()
@@ -214,12 +220,13 @@ public class GameManager : NetworkBehaviour
         ball.transform.position = newPosition;
     }
 
-    private void SpawnBall(Vector3 position)
-    {
-        ball = (GameObject)Instantiate(ballPrefab, position, Quaternion.identity);
-        ball.GetComponent<Ball>().ServingPlayer = server;
-        NetworkServer.Spawn(ball);
-    }
+    // Remove, never used
+    //private void SpawnBall(Vector3 position)
+    //{
+    //    ball = (GameObject)Instantiate(ballPrefab, position, Quaternion.identity);
+    //    ball.GetComponent<Ball>().ServingPlayer = server;
+    //    NetworkServer.Spawn(ball);
+    //}
 
    // USELESS replace by a syncVar
     //private void OnScoresChange(Dictionary<Utility.Team, int> newScores)
@@ -238,7 +245,7 @@ public class GameManager : NetworkBehaviour
 
     private void OnChangeTriggerPointWin(bool newVal)
     {
-        Debug.Log("Trigger point win ok");
+        Debug.Log("Trigger point win ok, waiting for players");
         
         // TODO launch the sequence for a new point
         // wait for the players to go in their waiting zone
@@ -246,7 +253,8 @@ public class GameManager : NetworkBehaviour
         {
             PlayersReady[team] = false;
         }
-        IsWaitingForPlayers = true;
+        //IsWaitingForPlayers = true;
+        IsWaitingForPlayers = false;
         MustStartNewPoint = true;
     }
 
@@ -268,5 +276,10 @@ public class GameManager : NetworkBehaviour
             // Set the new service zone
             serviceZones[Utility.Opp(server)][newIndex].GetComponent<MeshRenderer>().enabled = true;
         }
+    }
+
+    private void OnChangeTriggerNewBall(bool newVal)
+    {
+        ball = GameObject.FindGameObjectWithTag("Ball");
     }
 }

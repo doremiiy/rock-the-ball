@@ -35,6 +35,7 @@ public class Ball : NetworkBehaviour {
         {
             maxSpeed = 10000f;
         }
+        isServed = true;
     }
 
     //public override void OnStartClient()
