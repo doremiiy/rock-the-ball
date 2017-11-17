@@ -20,7 +20,7 @@ public class PlayerController : NetworkBehaviour{
         private Vector3 currentPosition = new Vector3();
         private Vector3 speed;
         private VRNode vrNode;
-        private LayerMask castMask;
+        public LayerMask castMask;
 
 
         public void Refresh(float timeLapse)
@@ -115,10 +115,10 @@ public class PlayerController : NetworkBehaviour{
     //[SyncVar(hook = "OnChangeBallPosition")]
     //private bool ballPositionTrigger;
     [SyncVar(hook = "OnChangeBallPosition") ]
-    private Vector3 ballPosition;
+    public Vector3 ballPosition;
     [SyncVar(hook = "OnChangeBallForce")]
     private bool ballForceTrigger;
-    private Vector3 ballForce = Vector3.right; 
+    public Vector3 ballForce; 
 
     // TODO create a data structure in the gameManager to register every ball in the field
     public GameObject ball;
@@ -202,6 +202,7 @@ public class PlayerController : NetworkBehaviour{
             return;
         }
 
+        Debug.Log("PLayer controller ok");
         Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
 
         if (hand == rightHand.hand)
@@ -209,6 +210,7 @@ public class PlayerController : NetworkBehaviour{
         else if (hand == leftHand.hand)
             ballForce = leftHand.Speed * forceMultiplier;
 
+        ballForceTrigger = !ballForceTrigger;
         ballPosition = ball.transform.position;
         // TODO replace the force application by an update of the ball's velocity
     }
