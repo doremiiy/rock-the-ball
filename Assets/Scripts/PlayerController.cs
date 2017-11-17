@@ -203,7 +203,6 @@ public class PlayerController : NetworkBehaviour{
             return;
         }
 
-        Debug.Log("PLayer controller ok");
         Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
 
         if (hand == rightHand.hand)
@@ -242,6 +241,7 @@ public class PlayerController : NetworkBehaviour{
             //TODO vive controllers trigger
             if (Input.GetKeyDown(KeyCode.Return))
             {
+                Debug.Log("Player ready");
                 gameManager.PlayersReady[team] = true;
             }
         }
@@ -257,6 +257,7 @@ public class PlayerController : NetworkBehaviour{
 
         if (other.CompareTag("WaitingZone") && gameManager.MustStartNewPoint)
         {
+            Debug.Log("player not ready");
             gameManager.PlayersReady[team] = false;
         }
     }

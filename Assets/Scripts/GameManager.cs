@@ -65,6 +65,7 @@ public class GameManager : NetworkBehaviour
             playersReady = value;
             if (!PlayersReady.ContainsValue(false))
             {
+                Debug.Log("All players ready");
                 isWaitingForPlayers = false; 
             } else
             {
@@ -237,6 +238,8 @@ public class GameManager : NetworkBehaviour
 
     private void OnChangeTriggerPointWin(bool newVal)
     {
+        Debug.Log("Trigger point win ok");
+        
         // TODO launch the sequence for a new point
         // wait for the players to go in their waiting zone
         foreach (Utility.Team team in Enum.GetValues(typeof(Utility.Team)))

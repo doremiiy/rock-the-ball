@@ -35,7 +35,6 @@ public class Ball : NetworkBehaviour {
         {
             maxSpeed = 10000f;
         }
-        isServed = true;
     }
 
     //public override void OnStartClient()
@@ -87,6 +86,10 @@ public class Ball : NetworkBehaviour {
         else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
         {
             gameManager.IncreasePlayerScore(Utility.Opp(other.gameObject.GetComponent<Goal>().team));
+        } else if (other.CompareTag("Racket"))
+        {
+            Debug.Log("TEST player service");
+            isServed = true;
         }
     }
 }
