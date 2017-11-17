@@ -14,7 +14,7 @@ public class GameManager : NetworkBehaviour
     public GameObject[] bluePlayerServiceZones;
     public UIScores uiScores;
     public GameObject ballPrefab;
-    public GameObject ball;
+    private GameObject ball;
 
 
     private Dictionary<Utility.Team, int> scores;
@@ -89,6 +89,19 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    public GameObject Ball
+    {
+        get
+        {
+            return ball;
+        }
+
+        set
+        {
+            ball = value;
+        }
+    }
+
     private void Update()
     {
         if (!isServer)
@@ -134,7 +147,8 @@ public class GameManager : NetworkBehaviour
         };
 
         // pick a random team in the enum to start the match
-        server = Utility.RandomTeam();
+        //server = Utility.RandomTeam();
+        server = Utility.Team.blue;
         StartNewPoint();
     }
 
@@ -142,7 +156,7 @@ public class GameManager : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        ball = GameObject.FindGameObjectWithTag("Ball");
+        Ball = GameObject.FindGameObjectWithTag("Ball");
 
         serviceZones = new Dictionary<Utility.Team, GameObject[]>
         {
@@ -171,7 +185,7 @@ public class GameManager : NetworkBehaviour
         lastPointWinner = team;
         server = Utility.Opp(lastPointWinner);
         scores[team]++;
-        Network.Destroy(ball);
+        Network.Destroy(Ball);
         //uiScores.UpdateScores();
         if (scores[team] == Utility.winningScore)
         {
@@ -217,7 +231,7 @@ public class GameManager : NetworkBehaviour
 
     public void RelocateBall(Vector3 newPosition)
     {
-        ball.transform.position = newPosition;
+        Ball.transform.position = newPosition;
     }
 
     // Remove, never used
@@ -280,6 +294,6 @@ public class GameManager : NetworkBehaviour
 
     private void OnChangeTriggerNewBall(bool newVal)
     {
-        ball = GameObject.FindGameObjectWithTag("Ball");
+        Ball = GameObject.FindGameObjectWithTag("Ball");
     }
 }

@@ -122,7 +122,7 @@ public class PlayerController : NetworkBehaviour{
     public Vector3 ballForce; 
 
     // TODO create a data structure in the gameManager to register every ball in the field
-    public GameObject ball;
+    //public GameObject ball;
 
     // TEST SECTION
     public Vector3 testForce;
@@ -149,13 +149,13 @@ public class PlayerController : NetworkBehaviour{
     public override void OnStartClient()
     {
         base.OnStartClient();
-        ball = GameObject.FindGameObjectWithTag("Ball");
+        //ball = GameObject.FindGameObjectWithTag("Ball");
     }
 
     public override void OnStartServer()
     {
         base.OnStartServer();
-        ball = GameObject.FindGameObjectWithTag("Ball");
+        //ball = GameObject.FindGameObjectWithTag("Ball");
     }
 
 
@@ -211,7 +211,7 @@ public class PlayerController : NetworkBehaviour{
             ballForce = leftHand.Speed * forceMultiplier;
 
         ballForceTrigger = !ballForceTrigger;
-        ballPosition = ball.transform.position;
+        ballPosition = gameManager.Ball.transform.position;
         // TODO replace the force application by an update of the ball's velocity
     }
 
@@ -225,7 +225,7 @@ public class PlayerController : NetworkBehaviour{
 
     private void OnChangeBallForce(bool newVal)
     {
-        ball.GetComponent<Rigidbody>().AddForce(ballForce, ForceMode.Impulse);
+        gameManager.Ball.GetComponent<Rigidbody>().AddForce(ballForce, ForceMode.Impulse);
     }
 
     // Only checked by the server
