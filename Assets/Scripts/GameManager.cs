@@ -10,8 +10,6 @@ public class GameManager : NetworkBehaviour
 
     public GameObject redPlayerBallSpawn;
     public GameObject bluePlayerBallSpawn;
-    public GameObject[] redPlayerServiceZones;
-    public GameObject[] bluePlayerServiceZones;
     public UIScores uiScores;
     public GameObject ballPrefab;
     private GameObject ball;
@@ -20,7 +18,7 @@ public class GameManager : NetworkBehaviour
     private Dictionary<Utility.Team, int> scores;
 
     private Dictionary<Utility.Team, GameObject> ballSpawnPoints;
-    private Dictionary<Utility.Team, GameObject[]> serviceZones;
+    public GameObject[] serviceZones;
     private ServiceZone currentServiceZone;
 
     [SyncVar(hook = "OnChangeCurrentServiceZoneIndex")]
@@ -134,12 +132,6 @@ public class GameManager : NetworkBehaviour
             { Utility.Team.red, redPlayerBallSpawn }
         };
 
-        serviceZones = new Dictionary<Utility.Team, GameObject[]>
-        {
-            { Utility.Team.blue, bluePlayerServiceZones},
-            { Utility.Team.red, redPlayerServiceZones}
-        };
-
         scores = new Dictionary<Utility.Team, int>
         {
             { Utility.Team.blue, 0 },
@@ -158,19 +150,13 @@ public class GameManager : NetworkBehaviour
         base.OnStartClient();
         Ball = GameObject.FindGameObjectWithTag("Ball");
 
-        serviceZones = new Dictionary<Utility.Team, GameObject[]>
-        {
-            { Utility.Team.blue, bluePlayerServiceZones},
-            { Utility.Team.red, redPlayerServiceZones}
-        };
-
         scores = new Dictionary<Utility.Team, int>
         {
             { Utility.Team.blue, 0 },
             { Utility.Team.red, 0 }
         };
 
-        serviceZones[Utility.Opp(server)][currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
+        serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
 
     }
 
@@ -213,15 +199,13 @@ public class GameManager : NetworkBehaviour
     public void ResetServiceZone()
     {
         currentServiceZone.IsValid = false;
-        // Reset value
         currentServiceZoneIndex = -1;
-        //serviceZones[Utility.Opp(server)][currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
     }
 
     private ServiceZone RandomServiceZone()
     {
-        currentServiceZoneIndex = UnityEngine.Random.Range(0, serviceZones[Utility.Opp(server)].Length);
-        currentServiceZone = serviceZones[Utility.Opp(server)][currentServiceZoneIndex].GetComponent<ServiceZone>();
+        currentServiceZoneIndex = UnityEngine.Random.Range(0, serviceZones.Length);
+        currentServiceZone = serviceZones[currentServiceZoneIndex].GetComponent<ServiceZone>();
         return currentServiceZone;
     }
 
@@ -284,11 +268,11 @@ public class GameManager : NetworkBehaviour
         {
             //Debug.Log(currentServiceZoneIndex);
             // Remove the old service zone
-            serviceZones[Utility.Opp(server)][currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
+            serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
         } else
         {
             // Set the new service zone
-            serviceZones[Utility.Opp(server)][newIndex].GetComponent<MeshRenderer>().enabled = true;
+            serviceZones[newIndex].GetComponent<MeshRenderer>().enabled = true;
         }
     }
 
