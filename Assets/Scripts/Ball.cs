@@ -9,6 +9,8 @@ public class Ball : NetworkBehaviour {
     public float maxSpeed;
     public GameManager gameManager;
 
+    public bool debugMode;
+
     private bool isServed = false;
     private Utility.Team servingPlayer;
 
@@ -34,6 +36,9 @@ public class Ball : NetworkBehaviour {
         if (maxSpeed == 0)
         {
             maxSpeed = 10000f;
+        }
+        if (!debugMode) {
+            isServed = true;
         }
     }
 
