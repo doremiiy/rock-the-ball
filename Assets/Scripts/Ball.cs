@@ -37,7 +37,7 @@ public class Ball : NetworkBehaviour {
         {
             maxSpeed = 10000f;
         }
-        if (!debugMode) {
+        if (debugMode) {
             isServed = true;
         }
     }
@@ -78,13 +78,13 @@ public class Ball : NetworkBehaviour {
             if (other.CompareTag("ServiceZone") && other.GetComponent<ServiceZone>().IsValid)
             {
                 Debug.Log("Service in");
-                isServed = false;
             }
             else
             {
                 Debug.Log("Service out");
                 gameManager.IncreasePlayerScore(Utility.Opp(ServingPlayer));
             }
+            isServed = false;
             gameManager.ResetServiceZone();
             // Check for a potential goal
         }
