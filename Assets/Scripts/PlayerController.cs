@@ -118,7 +118,6 @@ public class PlayerController : NetworkBehaviour{
     [SyncVar(hook = "OnChangeBallPosition") ]
     public Vector3 ballPosition;
     [SyncVar(hook = "OnChangeBallForce")]
-    private bool ballForceTrigger;
     public Vector3 ballForce; 
 
     // TODO create a data structure in the gameManager to register every ball in the field
@@ -196,7 +195,7 @@ public class PlayerController : NetworkBehaviour{
             GameObject ball = GameObject.FindGameObjectWithTag("Ball");
             Rigidbody rb_Ball = ball.GetComponent<Rigidbody>();
             ballPosition = ball.transform.position;
-            ballForceTrigger = !ballForceTrigger;  
+            //ballForce = !ballForceTrigger;  
         }
     }
 
@@ -209,13 +208,13 @@ public class PlayerController : NetworkBehaviour{
         }
 
         Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
+        ballForce = Vector3.zero;
 
         if (hand == rightHand.hand)
             ballForce = rightHand.Speed * forceMultiplier;
         else if (hand == leftHand.hand)
             ballForce = leftHand.Speed * forceMultiplier;
 
-        ballForceTrigger = !ballForceTrigger;
         ballPosition = gameManager.Ball.transform.position;
         // TODO replace the force application by an update of the ball's velocity
     }
@@ -228,9 +227,10 @@ public class PlayerController : NetworkBehaviour{
         gameManager.RelocateBall(newBallPosition);
     }
 
-    private void OnChangeBallForce(bool newVal)
+    //TODO ballForce 
+    private void OnChangeBallForce(Vector3 newBallForce)
     {
-        gameManager.Ball.GetComponent<Rigidbody>().AddForce(ballForce, ForceMode.Impulse);
+        gameManager.Ball.GetComponent<Rigidbody>().AddForce(newBallForce, ForceMode.Impulse);
     }
 
     // Only checked by the server
