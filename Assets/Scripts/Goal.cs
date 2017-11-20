@@ -5,5 +5,6 @@ using UnityEngine;
 public class Goal : MonoBehaviour {
 
     public Utility.Team team;
+    public bool isActive;
 
 }

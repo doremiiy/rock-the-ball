@@ -111,6 +111,7 @@ public class PlayerController : NetworkBehaviour{
     public float forceMultiplier;
     public HandManager rightHand, leftHand;
     public Camera playerCamera;
+    public Utility.Team team;
 
     //[SyncVar(hook = "OnChangeBallPosition")]
     //private bool ballPositionTrigger;
@@ -121,7 +122,7 @@ public class PlayerController : NetworkBehaviour{
     public Vector3 ballForce; 
 
     // TODO create a data structure in the gameManager to register every ball in the field
-    public GameObject ball;
+    //public GameObject ball;
 
     // TEST SECTION
     public Vector3 testForce;
@@ -148,13 +149,13 @@ public class PlayerController : NetworkBehaviour{
     public override void OnStartClient()
     {
         base.OnStartClient();
-        ball = GameObject.FindGameObjectWithTag("Ball");
+        //ball = GameObject.FindGameObjectWithTag("Ball");
     }
 
     public override void OnStartServer()
     {
         base.OnStartServer();
-        ball = GameObject.FindGameObjectWithTag("Ball");
+        //ball = GameObject.FindGameObjectWithTag("Ball");
     }
 
 
@@ -202,7 +203,6 @@ public class PlayerController : NetworkBehaviour{
             return;
         }
 
-        Debug.Log("PLayer controller ok");
         Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
 
         if (hand == rightHand.hand)
@@ -211,7 +211,7 @@ public class PlayerController : NetworkBehaviour{
             ballForce = leftHand.Speed * forceMultiplier;
 
         ballForceTrigger = !ballForceTrigger;
-        ballPosition = ball.transform.position;
+        ballPosition = gameManager.Ball.transform.position;
         // TODO replace the force application by an update of the ball's velocity
     }
 
@@ -225,6 +225,40 @@ public class PlayerController : NetworkBehaviour{
 
     private void OnChangeBallForce(bool newVal)
     {
-        ball.GetComponent<Rigidbody>().AddForce(ballForce, ForceMode.Impulse);  
+        gameManager.Ball.GetComponent<Rigidbody>().AddForce(ballForce, ForceMode.Impulse);
+    }
+
+    // Only checked by the server
+    private void OnTriggerStay(Collider other)
+    {
+        if (!isServer)
+        {
+            return;
+        }
+
+        if (gameManager.IsWaitingForPlayers && other.CompareTag("WaitingZone"))
+        {
+            //TODO vive controllers trigger
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                Debug.Log("Player ready");
+                gameManager.PlayersReady[team] = true;
+            }
+        }
+    }
+
+    // Only checked by the server
+    private void OnTriggerExit(Collider other)
+    {
+        if (!isServer)
+        {
+            return;
+        }
+
+        if (other.CompareTag("WaitingZone") && gameManager.MustStartNewPoint)
+        {
+            Debug.Log("player not ready");
+            gameManager.PlayersReady[team] = false;
+        }
     }
 }

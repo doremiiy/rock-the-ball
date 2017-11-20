@@ -5,26 +5,58 @@ using UnityEngine.Networking;
 public class Ball : NetworkBehaviour {
 
 	private Rigidbody rb;
-	public Vector3 force;
+	public Vector3 testForce;
     public float maxSpeed;
     public GameManager gameManager;
+
+    public bool debugMode;
 
     private bool isServed = false;
     private Utility.Team servingPlayer;
 
+    public Utility.Team ServingPlayer
+    {
+        get
+        {
+            return servingPlayer;
+        }
+
+        set
+        {
+            servingPlayer = value;
+        }
+    }
+
     // Must be executed everywhere
+    // Warning, maybe smarter to do in the OnStart methods
     void Start () {
-		rb = GetComponent<Rigidbody>();
-        rb.AddForce(force);
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        rb = GetComponent<Rigidbody>();
+        //rb.AddForce(testForce);
         if (maxSpeed == 0)
         {
             maxSpeed = 10000f;
         }
+        if (debugMode) {
+            isServed = true;
+        }
     }
+
+    //public override void OnStartClient()
+    //{
+    //    base.OnStartClient();
+    //    gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+    //}
+
+    //public override void OnStartServer()
+    //{
+    //    base.OnStartServer();
+    //    gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+    //}
 
     void FixedUpdate()
     {
-        // Can be executed everywhere, on clients and server. No need to use the network here
+        // Speed cap
         if (rb.velocity.magnitude > maxSpeed)
         {
             rb.velocity = rb.velocity.normalized * maxSpeed;
@@ -33,52 +65,36 @@ public class Ball : NetworkBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        // This code should be executed only on the server, no need for redundancy, the server must have authority
+        // Server only for collision detection
         if (!isServer)
         {
             return;
         }
 
+        // TODO if the opposite player hit the ball, he loses the point
         if (isServed)
         {
             // Check to see if the service is good
-            if (other.CompareTag("ServiceZone") && other.GetComponent<ServiceZone>().GetIsValid())
+            if (other.CompareTag("ServiceZone") && other.GetComponent<ServiceZone>().IsValid)
             {
                 Debug.Log("Service in");
-                isServed = false;
             }
             else
             {
                 Debug.Log("Service out");
-                gameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
+                gameManager.IncreasePlayerScore(Utility.Opp(ServingPlayer));
             }
+            isServed = false;
             gameManager.ResetServiceZone();
-        } else if (other.CompareTag("Ball"))
-        {
-            Debug.Log("Ball entered the Goal");
-            gameManager.IncreasePlayerScore(other.gameObject.GetComponent<Goal>().team);
-            // Destroy on every client
-            Network.Destroy(other.gameObject);
+            // Check for a potential goal
         }
-    }
-
-    public bool GetIsServed()
-    {
-        return isServed;
-    }
-
-    public void SetIsServed(bool newVal)
-    {
-        isServed = newVal;
-    }
-
-    public Utility.Team GetServingPlayer()
-    {
-        return servingPlayer;
-    }
-
-    public void SetServingPlayer(Utility.Team newVal)
-    {
-        servingPlayer = newVal;
+        else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
+        {
+            gameManager.IncreasePlayerScore(Utility.Opp(other.gameObject.GetComponent<Goal>().team));
+        } else if (other.CompareTag("Racket"))
+        {
+            Debug.Log("TEST player service");
+            isServed = true;
+        }
     }
 }

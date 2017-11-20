@@ -7,12 +7,16 @@ public class ServiceZone : MonoBehaviour
 
     private bool isValid = false;
 
-    public void SetIsValid(bool newValidityValue)
+    public bool IsValid
     {
-        isValid = newValidityValue;
-    }
-    public bool GetIsValid()
-    {
-        return isValid;
+        get
+        {
+            return isValid;
+        }
+
+        set
+        {
+            isValid = value;
+        }
     }
 }
