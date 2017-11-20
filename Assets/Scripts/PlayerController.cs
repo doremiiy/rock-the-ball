@@ -162,6 +162,11 @@ public class PlayerController : NetworkBehaviour{
     private void FixedUpdate()
     {   
 
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
         float timeLapse = Time.fixedDeltaTime;
 
         rightHand.Refresh(timeLapse);
