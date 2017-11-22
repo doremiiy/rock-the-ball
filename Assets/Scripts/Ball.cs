@@ -87,8 +87,7 @@ public class Ball : NetworkBehaviour {
             isServed = false;
             gameManager.ResetServiceZone();
             // Check for a potential goal
-        }
-        else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
+        } else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
         {
             gameManager.IncreasePlayerScore(Utility.Opp(other.gameObject.GetComponent<Goal>().team));
         } else if (other.CompareTag("Racket"))
