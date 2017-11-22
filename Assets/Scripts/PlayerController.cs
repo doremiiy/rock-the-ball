@@ -40,7 +40,7 @@ public class PlayerController : NetworkBehaviour{
             {
                 hand.transform.position = hit.point;
                 currentPosition = hand.transform.position;
-                playerController.BallHit(hand, hit.collider);
+                playerController.CmdBallHit(hand.GetComponent<RacketController>().handSide);
             }   
         }
 
@@ -200,19 +200,18 @@ public class PlayerController : NetworkBehaviour{
     }
 
     // Works only on the server
-    public void BallHit(GameObject hand, Collider collider)
+    // TODO replace the gameObject parameter with a enum value
+    [Command]
+    public void CmdBallHit(Utility.Hand handSide)
     {
-        if (!isServer || !collider.CompareTag("Ball"))
-        {
-            return;
-        }
+        Debug.Log("Only called on the server");
 
-        Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
+        Rigidbody ballRigidbody = gameManager.Ball.GetComponent<Rigidbody>();
         ballForce = Vector3.zero;
 
-        if (hand == rightHand.hand)
+        if (handSide == rightHand.hand.GetComponent<RacketController>().handSide)
             ballForce = rightHand.Speed * forceMultiplier;
-        else if (hand == leftHand.hand)
+        else if (handSide == leftHand.hand.GetComponent<RacketController>().handSide)
             ballForce = leftHand.Speed * forceMultiplier;
 
         ballPosition = gameManager.Ball.transform.position;
@@ -224,12 +223,14 @@ public class PlayerController : NetworkBehaviour{
     // The syncVar are changed only in 1 playerController => No condition to check. 
     private void OnChangeBallPosition(Vector3 newBallPosition)
     {
+        Debug.Log("Ball position change detected");
         gameManager.RelocateBall(newBallPosition);
     }
 
     //TODO ballForce 
     private void OnChangeBallForce(Vector3 newBallForce)
     {
+        Debug.Log("Ball force change detected");
         gameManager.Ball.GetComponent<Rigidbody>().AddForce(newBallForce, ForceMode.Impulse);
     }
 
