@@ -39,6 +39,8 @@ public class GameManager : NetworkBehaviour
     [SyncVar (hook ="OnChangeTriggerNewBall")]
     private bool triggerNewBall;
 
+    public Utility.Team startSide;
+
     public bool IsWaitingForPlayers
     {
         get
@@ -140,7 +142,7 @@ public class GameManager : NetworkBehaviour
 
         // pick a random team in the enum to start the match
         //server = Utility.RandomTeam();
-        server = Utility.Team.BLUE;
+        server = startSide;
         StartNewPoint();
     }
 
