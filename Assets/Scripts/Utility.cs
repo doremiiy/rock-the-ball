@@ -5,18 +5,18 @@ using UnityEngine;
 
 public class Utility {
 
-    public enum Team { blue, red };
+    public enum Team { BLUE, RED };
     static public int winningScore = 15;
 
     static public Team Opp(Team team)
     {
         Team opp;
-        if  (team == Team.blue)
+        if  (team == Team.BLUE)
         {
-            opp = Team.red;
-        } else if (team == Team.red)
+            opp = Team.RED;
+        } else if (team == Team.RED)
         {
-            opp = Team.blue;
+            opp = Team.BLUE;
         } else
         {
             throw new Exception("Error : Unrecognized Team passed to method Utility.Opp()");
