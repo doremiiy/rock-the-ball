@@ -278,7 +278,7 @@ public class GameManager : NetworkBehaviour
             Debug.Log("PlayerController: reset service zone mesh");
             // Remove the old service zone
             serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
-        } else
+        } else if (newIndex >= 0)
         {
             // Set the new service zone
             Debug.Log("PlayerController: set new service zone mesh");
