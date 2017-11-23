@@ -239,6 +239,10 @@ public class PlayerController : NetworkBehaviour{
     private void OnChangeBallForce(Vector3 newBallForce)
     {
         Debug.Log("Player Controller: Ball force change detected =" + newBallForce);
+        if (gameManager.Ball == null)
+        {
+            gameManager.UpdateBall();
+        }
         gameManager.Ball.GetComponent<Rigidbody>().AddForce(newBallForce, ForceMode.Impulse);
     }
 

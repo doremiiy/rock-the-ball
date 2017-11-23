@@ -283,6 +283,13 @@ public class GameManager : NetworkBehaviour
 
     private void OnChangeTriggerNewBall(bool newVal)
     {
+
+        Debug.Log("PlayerController trigger new Ball has changed value");
+        UpdateBall();
+    }
+
+    private void UpdateBall()
+    {
         Ball = GameObject.FindGameObjectWithTag("Ball");
     }
 }
