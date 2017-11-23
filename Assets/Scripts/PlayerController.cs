@@ -40,7 +40,7 @@ public class PlayerController : NetworkBehaviour{
             {
                 hand.transform.position = hit.point;
                 currentPosition = hand.transform.position;
-                playerController.CmdBallHit(hand.GetComponent<RacketController>().handSide);
+                playerController.BallHit(hand.GetComponent<RacketController>().handSide);
             }   
         }
 
@@ -201,9 +201,13 @@ public class PlayerController : NetworkBehaviour{
 
     // Works only on the server
     // TODO replace the gameObject parameter with a enum value
-    [Command]
-    public void CmdBallHit(Utility.Hand handSide)
+    public void BallHit(Utility.Hand handSide)
     {
+        if (!isServer)
+        {
+            return;
+        }
+
         Debug.Log("Only called on the server");
 
         Rigidbody ballRigidbody = gameManager.Ball.GetComponent<Rigidbody>();

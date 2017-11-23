@@ -139,7 +139,7 @@ public class GameManager : NetworkBehaviour
             { Utility.Team.BLUE, 0 },
             { Utility.Team.RED, 0 }
         };
-
+        Ball = GameObject.FindGameObjectWithTag("Ball");
         // pick a random team in the enum to start the match
         //server = Utility.RandomTeam();
         server = startSide;
@@ -150,7 +150,7 @@ public class GameManager : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        Ball = GameObject.FindGameObjectWithTag("Ball");
+        //Ball = GameObject.FindGameObjectWithTag("Ball");
 
         scores = new Dictionary<Utility.Team, int>
         {
