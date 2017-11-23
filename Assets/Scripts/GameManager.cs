@@ -12,7 +12,7 @@ public class GameManager : NetworkBehaviour
     public GameObject bluePlayerBallSpawn;
     public UIScores uiScores;
     public GameObject ballPrefab;
-    private GameObject ball;
+    public GameObject ball;
 
 
     private Dictionary<Utility.Team, int> scores;
@@ -38,6 +38,8 @@ public class GameManager : NetworkBehaviour
     private bool mustStartNewPoint;
     [SyncVar (hook ="OnChangeTriggerNewBall")]
     private bool triggerNewBall;
+    [SyncVar (hook ="OnChangeTriggerResetServiceZone")]
+    private bool triggerResetServiceZone;
 
     public Utility.Team startSide;
 
@@ -150,13 +152,15 @@ public class GameManager : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        Ball = GameObject.FindGameObjectWithTag("Ball");
+        //Ball = GameObject.FindGameObjectWithTag("Ball");
 
         scores = new Dictionary<Utility.Team, int>
         {
             { Utility.Team.BLUE, 0 },
             { Utility.Team.RED, 0 }
         };
+
+        Ball = GameObject.FindGameObjectWithTag("Ball");
 
         serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
 
@@ -190,18 +194,18 @@ public class GameManager : NetworkBehaviour
     private void StartNewPoint()
     {
         // A new ball is instantiated in front of the player who lost the last point
-        var newBall = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
-        NetworkServer.Spawn(newBall);
+        Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
+        NetworkServer.Spawn(Ball);
         currentServiceZone = RandomServiceZone();
         currentServiceZone.IsValid = true;
-        newBall.GetComponent<Ball>().ServingPlayer = server;
+        Ball.GetComponent<Ball>().ServingPlayer = server;
         triggerNewBall = !triggerNewBall;
     }
 
     public void ResetServiceZone()
     {
         currentServiceZone.IsValid = false;
-        currentServiceZoneIndex = -1;
+        triggerResetServiceZone = !triggerResetServiceZone;
     }
 
     private ServiceZone RandomServiceZone()
@@ -217,6 +221,10 @@ public class GameManager : NetworkBehaviour
 
     public void RelocateBall(Vector3 newPosition)
     {
+        if (Ball == null)
+        {
+            UpdateBall();
+        }
         Ball.transform.position = newPosition;
     }
 
@@ -266,21 +274,34 @@ public class GameManager : NetworkBehaviour
 
     private void OnChangeCurrentServiceZoneIndex(int newIndex)
     {
-        // TODO check that this logic works also on the server
+
         if (newIndex == -1)
         {
-            //Debug.Log(currentServiceZoneIndex);
+            Debug.Log("PlayerController: reset service zone mesh");
             // Remove the old service zone
             serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
         } else
         {
             // Set the new service zone
+            Debug.Log("PlayerController: set new service zone mesh");
             serviceZones[newIndex].GetComponent<MeshRenderer>().enabled = true;
         }
     }
 
     private void OnChangeTriggerNewBall(bool newVal)
     {
+
+        Debug.Log("PlayerController trigger new Ball has changed value");
+        UpdateBall();
+    }
+
+    public void UpdateBall()
+    {
         Ball = GameObject.FindGameObjectWithTag("Ball");
+    }
+
+    private void OnChangeTriggerResetServiceZone(bool newVal)
+    {
+        serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
     }
 }

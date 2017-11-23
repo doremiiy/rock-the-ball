@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 public class RacketController : MonoBehaviour {
@@ -17,7 +15,10 @@ public class RacketController : MonoBehaviour {
 
     
 	void OnTriggerEnter (Collider collider) {
-       Debug.Log("Racket Controller : collision detected");
-       playerController.CmdBallHit(handSide);
+        if (collider.CompareTag("Ball"))
+        {
+            Debug.Log("Racket Controller : collision detected");
+            playerController.BallHit(handSide);
+        }
 	}
 }

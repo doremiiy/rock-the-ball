@@ -23,9 +23,9 @@ public class PlayerController : NetworkBehaviour{
         public LayerMask castMask;
 
 
-        public void Refresh(float timeLapse)
+        public void Refresh(float timeLapse, bool shouldTrackPosition)
         {
-            if (shouldUseVive)
+            if (shouldUseVive && shouldTrackPosition)
             {
                 hand.transform.localPosition = InputTracking.GetLocalPosition(VrNode);
                 hand.transform.localRotation = InputTracking.GetLocalRotation(VrNode);
@@ -40,7 +40,7 @@ public class PlayerController : NetworkBehaviour{
             {
                 hand.transform.position = hit.point;
                 currentPosition = hand.transform.position;
-                playerController.CmdBallHit(hand.GetComponent<RacketController>().handSide);
+                playerController.BallHit(hand.GetComponent<RacketController>().handSide);
             }   
         }
 
@@ -159,17 +159,18 @@ public class PlayerController : NetworkBehaviour{
 
 
     private void FixedUpdate()
-    {   
-
-        if (!isLocalPlayer)
-        {
-            return;
-        }
-
+    {
         float timeLapse = Time.fixedDeltaTime;
 
-        rightHand.Refresh(timeLapse);
-        leftHand.Refresh(timeLapse);            
+        if (isLocalPlayer)
+        {
+            rightHand.Refresh(timeLapse, true);
+            leftHand.Refresh(timeLapse, true);
+        } else if (isServer)
+        {
+            rightHand.Refresh(timeLapse, false);
+            leftHand.Refresh(timeLapse, false);
+        }
     }
 
     private void Update()
@@ -191,7 +192,6 @@ public class PlayerController : NetworkBehaviour{
         // Test code to apply a force on the ball without a htc Vive
         if (isServer && isLocalPlayer && Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("OK");
             GameObject ball = GameObject.FindGameObjectWithTag("Ball");
             Rigidbody rb_Ball = ball.GetComponent<Rigidbody>();
             ballPosition = ball.transform.position;
@@ -201,10 +201,14 @@ public class PlayerController : NetworkBehaviour{
 
     // Works only on the server
     // TODO replace the gameObject parameter with a enum value
-    [Command]
-    public void CmdBallHit(Utility.Hand handSide)
+    public void BallHit(Utility.Hand handSide)
     {
-        Debug.Log("Only called on the server");
+        if (!isServer)
+        {
+            return;
+        }
+
+        Debug.Log("Player Controller: Ball Hit called");
 
         Rigidbody ballRigidbody = gameManager.Ball.GetComponent<Rigidbody>();
         ballForce = Vector3.zero;
@@ -214,7 +218,11 @@ public class PlayerController : NetworkBehaviour{
         else if (handSide == leftHand.hand.GetComponent<RacketController>().handSide)
             ballForce = leftHand.Speed * forceMultiplier;
 
+
         ballPosition = gameManager.Ball.transform.position;
+
+        Debug.Log("Player Controller: Ball force is: " + ballForce);
+        Debug.Log("Player Controller: Ball position is: " + ballPosition);
         // TODO replace the force application by an update of the ball's velocity
     }
 
@@ -223,14 +231,18 @@ public class PlayerController : NetworkBehaviour{
     // The syncVar are changed only in 1 playerController => No condition to check. 
     private void OnChangeBallPosition(Vector3 newBallPosition)
     {
-        Debug.Log("Ball position change detected");
+        Debug.Log("Player Controller: Ball position change detected, newPosition =" + newBallPosition);
         gameManager.RelocateBall(newBallPosition);
     }
 
     //TODO ballForce 
     private void OnChangeBallForce(Vector3 newBallForce)
     {
-        Debug.Log("Ball force change detected");
+        Debug.Log("Player Controller: Ball force change detected =" + newBallForce);
+        if (gameManager.Ball == null)
+        {
+            gameManager.UpdateBall();
+        }
         gameManager.Ball.GetComponent<Rigidbody>().AddForce(newBallForce, ForceMode.Impulse);
     }
 
