@@ -203,6 +203,7 @@ public class GameManager : NetworkBehaviour
     public void ResetServiceZone()
     {
         currentServiceZone.IsValid = false;
+        currentServiceZoneIndex = -2;
         currentServiceZoneIndex = -1;
     }
 
@@ -272,15 +273,15 @@ public class GameManager : NetworkBehaviour
 
     private void OnChangeCurrentServiceZoneIndex(int newIndex)
     {
-        // TODO check that this logic works also on the server
         if (newIndex == -1)
         {
-            //Debug.Log(currentServiceZoneIndex);
+            Debug.Log("PlayerController: reset service zone mesh");
             // Remove the old service zone
             serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
         } else
         {
             // Set the new service zone
+            Debug.Log("PlayerController: set new service zone mesh");
             serviceZones[newIndex].GetComponent<MeshRenderer>().enabled = true;
         }
     }
