@@ -12,7 +12,7 @@ public class GameManager : NetworkBehaviour
     public GameObject bluePlayerBallSpawn;
     public UIScores uiScores;
     public GameObject ballPrefab;
-    private GameObject ball;
+    public GameObject ball;
 
 
     private Dictionary<Utility.Team, int> scores;
@@ -139,7 +139,7 @@ public class GameManager : NetworkBehaviour
             { Utility.Team.BLUE, 0 },
             { Utility.Team.RED, 0 }
         };
-        Ball = GameObject.FindGameObjectWithTag("Ball");
+
         // pick a random team in the enum to start the match
         //server = Utility.RandomTeam();
         server = startSide;
@@ -157,6 +157,8 @@ public class GameManager : NetworkBehaviour
             { Utility.Team.BLUE, 0 },
             { Utility.Team.RED, 0 }
         };
+
+        Ball = GameObject.FindGameObjectWithTag("Ball");
 
         serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
 
@@ -190,11 +192,11 @@ public class GameManager : NetworkBehaviour
     private void StartNewPoint()
     {
         // A new ball is instantiated in front of the player who lost the last point
-        var newBall = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
-        NetworkServer.Spawn(newBall);
+        Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
+        NetworkServer.Spawn(Ball);
         currentServiceZone = RandomServiceZone();
         currentServiceZone.IsValid = true;
-        newBall.GetComponent<Ball>().ServingPlayer = server;
+        Ball.GetComponent<Ball>().ServingPlayer = server;
         triggerNewBall = !triggerNewBall;
     }
 
