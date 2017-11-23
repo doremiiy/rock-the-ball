@@ -288,7 +288,7 @@ public class GameManager : NetworkBehaviour
         UpdateBall();
     }
 
-    private void UpdateBall()
+    public void UpdateBall()
     {
         Ball = GameObject.FindGameObjectWithTag("Ball");
     }
