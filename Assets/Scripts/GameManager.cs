@@ -39,6 +39,8 @@ public class GameManager : NetworkBehaviour
     [SyncVar (hook ="OnChangeTriggerNewBall")]
     private bool triggerNewBall;
 
+    public Utility.Team startSide;
+
     public bool IsWaitingForPlayers
     {
         get
@@ -121,26 +123,26 @@ public class GameManager : NetworkBehaviour
         // Only accessed by the server
         PlayersReady = new Dictionary<Utility.Team, bool>
         {
-            { Utility.Team.blue, true},
-            { Utility.Team.red, true}
+            { Utility.Team.BLUE, true},
+            { Utility.Team.RED, true}
         };
 
         // Only accessed by the server
         ballSpawnPoints = new Dictionary<Utility.Team, GameObject>
         {
-            { Utility.Team.blue, bluePlayerBallSpawn },
-            { Utility.Team.red, redPlayerBallSpawn }
+            { Utility.Team.BLUE, bluePlayerBallSpawn },
+            { Utility.Team.RED, redPlayerBallSpawn }
         };
 
         scores = new Dictionary<Utility.Team, int>
         {
-            { Utility.Team.blue, 0 },
-            { Utility.Team.red, 0 }
+            { Utility.Team.BLUE, 0 },
+            { Utility.Team.RED, 0 }
         };
 
         // pick a random team in the enum to start the match
         //server = Utility.RandomTeam();
-        server = Utility.Team.blue;
+        server = startSide;
         StartNewPoint();
     }
 
@@ -152,8 +154,8 @@ public class GameManager : NetworkBehaviour
 
         scores = new Dictionary<Utility.Team, int>
         {
-            { Utility.Team.blue, 0 },
-            { Utility.Team.red, 0 }
+            { Utility.Team.BLUE, 0 },
+            { Utility.Team.RED, 0 }
         };
 
         serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
@@ -249,7 +251,8 @@ public class GameManager : NetworkBehaviour
         // wait for the players to go in their waiting zone
         foreach (Utility.Team team in Enum.GetValues(typeof(Utility.Team)))
         {
-            PlayersReady[team] = false;
+            // TODO better client side handling of this shit
+            //PlayersReady[team] = false;
         }
         //IsWaitingForPlayers = true;
         IsWaitingForPlayers = false;

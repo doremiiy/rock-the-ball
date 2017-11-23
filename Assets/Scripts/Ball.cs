@@ -74,21 +74,23 @@ public class Ball : NetworkBehaviour {
         // TODO if the opposite player hit the ball, he loses the point
         if (isServed)
         {
-            // Check to see if the service is good
-            if (other.CompareTag("ServiceZone") && other.GetComponent<ServiceZone>().IsValid)
+            if (!other.CompareTag("Racket"))
             {
-                Debug.Log("Service in");
+                // Check to see if the service is good
+                if (other.CompareTag("ServiceZone") && other.GetComponent<ServiceZone>().IsValid)
+                {
+                    Debug.Log("Service in");
+                }
+                else
+                {
+                    Debug.Log("Service out");
+                    gameManager.IncreasePlayerScore(Utility.Opp(ServingPlayer));
+                }
+                isServed = false;
+                gameManager.ResetServiceZone();
             }
-            else
-            {
-                Debug.Log("Service out");
-                gameManager.IncreasePlayerScore(Utility.Opp(ServingPlayer));
-            }
-            isServed = false;
-            gameManager.ResetServiceZone();
             // Check for a potential goal
-        }
-        else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
+        } else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
         {
             gameManager.IncreasePlayerScore(Utility.Opp(other.gameObject.GetComponent<Goal>().team));
         } else if (other.CompareTag("Racket"))

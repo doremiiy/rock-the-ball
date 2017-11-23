@@ -17,16 +17,16 @@ public class UIScores : MonoBehaviour {
     }
 	
     public void UpdateScores() {
-        bluePlayerScore.text = gameManager.GetPlayerScore(Utility.Team.blue).ToString();
-        redPlayerScore.text = gameManager.GetPlayerScore(Utility.Team.red).ToString();
+        bluePlayerScore.text = gameManager.GetPlayerScore(Utility.Team.BLUE).ToString();
+        redPlayerScore.text = gameManager.GetPlayerScore(Utility.Team.RED).ToString();
     }
 
     public void DisplayWinText(Utility.Team WinningTeam)
     {
-        if (WinningTeam == Utility.Team.blue)
+        if (WinningTeam == Utility.Team.BLUE)
         {
             winText.text = "Blue Player wins the game";
-        } else if (WinningTeam == Utility.Team.red)
+        } else if (WinningTeam == Utility.Team.RED)
         {
             winText.text = "Red Player wins the game";
         }

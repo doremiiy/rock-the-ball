@@ -40,7 +40,7 @@ public class PlayerController : NetworkBehaviour{
             {
                 hand.transform.position = hit.point;
                 currentPosition = hand.transform.position;
-                playerController.BallHit(hand, hit.collider);
+                playerController.CmdBallHit(hand.GetComponent<RacketController>().handSide);
             }   
         }
 
@@ -118,7 +118,6 @@ public class PlayerController : NetworkBehaviour{
     [SyncVar(hook = "OnChangeBallPosition") ]
     public Vector3 ballPosition;
     [SyncVar(hook = "OnChangeBallForce")]
-    private bool ballForceTrigger;
     public Vector3 ballForce; 
 
     // TODO create a data structure in the gameManager to register every ball in the field
@@ -162,6 +161,11 @@ public class PlayerController : NetworkBehaviour{
     private void FixedUpdate()
     {   
 
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
         float timeLapse = Time.fixedDeltaTime;
 
         rightHand.Refresh(timeLapse);
@@ -191,26 +195,25 @@ public class PlayerController : NetworkBehaviour{
             GameObject ball = GameObject.FindGameObjectWithTag("Ball");
             Rigidbody rb_Ball = ball.GetComponent<Rigidbody>();
             ballPosition = ball.transform.position;
-            ballForceTrigger = !ballForceTrigger;  
+            //ballForce = !ballForceTrigger;  
         }
     }
 
     // Works only on the server
-    public void BallHit(GameObject hand, Collider collider)
+    // TODO replace the gameObject parameter with a enum value
+    [Command]
+    public void CmdBallHit(Utility.Hand handSide)
     {
-        if (!isServer || !collider.CompareTag("Ball"))
-        {
-            return;
-        }
+        Debug.Log("Only called on the server");
 
-        Rigidbody ballRigidbody = collider.gameObject.GetComponent<Rigidbody>();
+        Rigidbody ballRigidbody = gameManager.Ball.GetComponent<Rigidbody>();
+        ballForce = Vector3.zero;
 
-        if (hand == rightHand.hand)
+        if (handSide == rightHand.hand.GetComponent<RacketController>().handSide)
             ballForce = rightHand.Speed * forceMultiplier;
-        else if (hand == leftHand.hand)
+        else if (handSide == leftHand.hand.GetComponent<RacketController>().handSide)
             ballForce = leftHand.Speed * forceMultiplier;
 
-        ballForceTrigger = !ballForceTrigger;
         ballPosition = gameManager.Ball.transform.position;
         // TODO replace the force application by an update of the ball's velocity
     }
@@ -220,12 +223,15 @@ public class PlayerController : NetworkBehaviour{
     // The syncVar are changed only in 1 playerController => No condition to check. 
     private void OnChangeBallPosition(Vector3 newBallPosition)
     {
+        Debug.Log("Ball position change detected");
         gameManager.RelocateBall(newBallPosition);
     }
 
-    private void OnChangeBallForce(bool newVal)
+    //TODO ballForce 
+    private void OnChangeBallForce(Vector3 newBallForce)
     {
-        gameManager.Ball.GetComponent<Rigidbody>().AddForce(ballForce, ForceMode.Impulse);
+        Debug.Log("Ball force change detected");
+        gameManager.Ball.GetComponent<Rigidbody>().AddForce(newBallForce, ForceMode.Impulse);
     }
 
     // Only checked by the server
