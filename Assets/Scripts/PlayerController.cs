@@ -230,14 +230,14 @@ public class PlayerController : NetworkBehaviour{
     // The syncVar are changed only in 1 playerController => No condition to check. 
     private void OnChangeBallPosition(Vector3 newBallPosition)
     {
-        Debug.Log("Player Controller: Ball position change detected");
+        Debug.Log("Player Controller: Ball position change detected, newPosition =" + newBallPosition);
         gameManager.RelocateBall(newBallPosition);
     }
 
     //TODO ballForce 
     private void OnChangeBallForce(Vector3 newBallForce)
     {
-        Debug.Log("Player Controller: Ball force change detected");
+        Debug.Log("Player Controller: Ball force change detected =" + newBallForce);
         gameManager.Ball.GetComponent<Rigidbody>().AddForce(newBallForce, ForceMode.Impulse);
     }
 
