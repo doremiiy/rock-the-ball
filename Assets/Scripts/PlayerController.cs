@@ -23,9 +23,9 @@ public class PlayerController : NetworkBehaviour{
         public LayerMask castMask;
 
 
-        public void Refresh(float timeLapse)
+        public void Refresh(float timeLapse, bool shouldTrackPosition)
         {
-            if (shouldUseVive)
+            if (shouldUseVive && shouldTrackPosition)
             {
                 hand.transform.localPosition = InputTracking.GetLocalPosition(VrNode);
                 hand.transform.localRotation = InputTracking.GetLocalRotation(VrNode);
@@ -159,17 +159,18 @@ public class PlayerController : NetworkBehaviour{
 
 
     private void FixedUpdate()
-    {   
-
-        if (!isLocalPlayer)
-        {
-            return;
-        }
-
+    {
         float timeLapse = Time.fixedDeltaTime;
 
-        rightHand.Refresh(timeLapse);
-        leftHand.Refresh(timeLapse);            
+        if (isLocalPlayer)
+        {
+            rightHand.Refresh(timeLapse, true);
+            leftHand.Refresh(timeLapse, true);
+        } else if (isServer)
+        {
+            rightHand.Refresh(timeLapse, false);
+            leftHand.Refresh(timeLapse, false);
+        }
     }
 
     private void Update()
