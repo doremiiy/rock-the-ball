@@ -219,6 +219,10 @@ public class GameManager : NetworkBehaviour
 
     public void RelocateBall(Vector3 newPosition)
     {
+        if (Ball == null)
+        {
+            UpdateBall();
+        }
         Ball.transform.position = newPosition;
     }
 
