@@ -38,8 +38,6 @@ public class GameManager : NetworkBehaviour
     private bool mustStartNewPoint;
     [SyncVar (hook ="OnChangeTriggerNewBall")]
     private bool triggerNewBall;
-    [SyncVar (hook ="OnChangeTriggerResetServiceZone")]
-    private bool triggerResetServiceZone;
 
     public Utility.Team startSide;
 
@@ -205,7 +203,7 @@ public class GameManager : NetworkBehaviour
     public void ResetServiceZone()
     {
         currentServiceZone.IsValid = false;
-        triggerResetServiceZone = !triggerResetServiceZone;
+        currentServiceZoneIndex = -1;
     }
 
     private ServiceZone RandomServiceZone()
@@ -298,10 +296,5 @@ public class GameManager : NetworkBehaviour
     public void UpdateBall()
     {
         Ball = GameObject.FindGameObjectWithTag("Ball");
-    }
-
-    private void OnChangeTriggerResetServiceZone(bool newVal)
-    {
-        serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
     }
 }

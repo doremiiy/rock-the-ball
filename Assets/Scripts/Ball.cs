@@ -76,8 +76,7 @@ public class Ball : NetworkBehaviour {
         {
             if (!other.CompareTag("Racket"))
             {
-                isServed = false;
-                gameManager.ResetServiceZone();
+                
                 // Check to see if the service is good
                 if (other.CompareTag("ServiceZone") && other.GetComponent<ServiceZone>().IsValid)
                 {
@@ -88,6 +87,8 @@ public class Ball : NetworkBehaviour {
                     Debug.Log("Service out");
                     gameManager.IncreasePlayerScore(Utility.Opp(ServingPlayer));
                 }
+                isServed = false;
+                gameManager.ResetServiceZone();
             }
             // Check for a potential goal
         } else if (other.CompareTag("Goal") && other.gameObject.GetComponent<Goal>().isActive)
