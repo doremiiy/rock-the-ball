@@ -108,13 +108,12 @@ public class GameManager : NetworkBehaviour
             { Utility.Team.BLUE, 0 },
             { Utility.Team.RED, 0 }
         };
-
-        serviceManager = GameObject.FindGameObjectWithTag("ServiceManager").GetComponent<ServiceManager>();
     }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
+        serviceManager = GameObject.FindGameObjectWithTag("ServiceManager").GetComponent<ServiceManager>();
         Ball = GameObject.FindGameObjectWithTag("Ball");
     }
 
@@ -134,7 +133,7 @@ public class GameManager : NetworkBehaviour
             { Utility.Team.BLUE, bluePlayerBallSpawn },
             { Utility.Team.RED, redPlayerBallSpawn }
         };
-
+        serviceManager = GameObject.FindGameObjectWithTag("ServiceManager").GetComponent<ServiceManager>();
         server = startSide;
         StartNewPoint();
     }
