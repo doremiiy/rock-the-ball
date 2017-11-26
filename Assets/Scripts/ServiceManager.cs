@@ -46,6 +46,7 @@ public class ServiceManager : NetworkBehaviour {
         {
             serviceZone.GetComponent<ServiceZone>().ServiceManager = this;
         }
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
     }
 
     public override void OnStartClient()

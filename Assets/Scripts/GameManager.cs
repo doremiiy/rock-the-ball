@@ -103,21 +103,6 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (!isServer)
-        {
-            return;
-        }
-
-        if (MustStartNewPoint && !IsWaitingForPlayers || Input.GetKeyDown(KeyCode.Return))
-        {
-            Debug.Log("Test ok, starting a new point");
-            MustStartNewPoint = false;
-            StartNewPoint();
-        }
-    }
-
     private void Start()
     {
         scores = new Dictionary<Utility.Team, int>
@@ -127,7 +112,12 @@ public class GameManager : NetworkBehaviour
         };
 
         serviceManager = GameObject.FindGameObjectWithTag("ServiceManager").GetComponent<ServiceManager>();
-        serviceManager.GameManager = this;
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        Ball = GameObject.FindGameObjectWithTag("Ball");
     }
 
     public override void OnStartServer()
@@ -151,12 +141,25 @@ public class GameManager : NetworkBehaviour
         StartNewPoint();
     }
 
-    // Get the local Ball
-    public override void OnStartClient()
+    
+
+
+    private void Update()
     {
-        base.OnStartClient();
-        Ball = GameObject.FindGameObjectWithTag("Ball");
+        if (!isServer)
+        {
+            return;
+        }
+
+        if (MustStartNewPoint && !IsWaitingForPlayers || Input.GetKeyDown(KeyCode.Return))
+        {
+            Debug.Log("Test ok, starting a new point");
+            MustStartNewPoint = false;
+            StartNewPoint();
+        }
     }
+
+    
 
     public void IncreasePlayerScore(Utility.Team team)
     {
@@ -215,22 +218,6 @@ public class GameManager : NetworkBehaviour
     private void OnChangeLastPointWinner(Utility.Team newTeam)
     {
         scores[newTeam]++;
-    }
-
-    private void OnChangeCurrentServiceZoneIndex(int newIndex)
-    {
-
-        if (newIndex == -1)
-        {
-            Debug.Log("PlayerController: reset service zone mesh");
-            // Remove the old service zone
-            serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
-        } else
-        {
-            // Set the new service zone
-            Debug.Log("PlayerController: set new service zone mesh");
-            serviceZones[newIndex].GetComponent<MeshRenderer>().enabled = true;
-        }
     }
 
     private void OnChangeTriggerNewBall(bool newVal)
