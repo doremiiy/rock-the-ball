@@ -19,18 +19,11 @@ public class GameManager : NetworkBehaviour
     private Dictionary<Utility.Team, int> scores;
 
     private Dictionary<Utility.Team, GameObject> ballSpawnPoints;
-    public GameObject[] serviceZones;
-    private ServiceZone currentServiceZone;
-
-    [SyncVar(hook = "OnChangeCurrentServiceZoneIndex")]
-    private int currentServiceZoneIndex;
 
     [SyncVar]
     private bool triggerGameWin;
     [SyncVar(hook = "OnChangeTriggerPointWin")]
     private bool triggerPointWin;
-    [SyncVar]
-    private Utility.Team lastPointWinner;
     [SyncVar]
     private Utility.Team server;
 
@@ -165,13 +158,13 @@ public class GameManager : NetworkBehaviour
     {
         Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
         NetworkServer.Spawn(Ball);
-        serviceManager.SetNewServiceZone(Utility.Opp(lastPointWinner));
+        serviceManager.SetNewServiceZone(server);
         triggerNewBall = !triggerNewBall;
     }
 
     public void IncreasePlayerScore(Utility.Team team)
     {
-        lastPointWinner = team;
+        server = Utility.Opp(team);
         scores[team]++;
         Network.Destroy(Ball);
         //uiScores.UpdateScores();
@@ -208,11 +201,6 @@ public class GameManager : NetworkBehaviour
         //IsWaitingForPlayers = true;
         IsWaitingForPlayers = false;
         MustStartNewPoint = true;
-    }
-
-    private void OnChangeLastPointWinner(Utility.Team newTeam)
-    {
-        scores[newTeam]++;
     }
 
     private void OnChangeTriggerNewBall(bool newVal)
