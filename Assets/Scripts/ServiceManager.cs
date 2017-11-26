@@ -46,8 +46,6 @@ public class ServiceManager : NetworkBehaviour {
         {
             serviceZone.GetComponent<ServiceZone>().ServiceManager = this;
         }
-
-        GameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
     }
 
     public override void OnStartClient()
@@ -117,8 +115,3 @@ public class ServiceManager : NetworkBehaviour {
         }
     }
 }
-
-
-// Comment définir à quel moment la balle est servie ? 
-// Le service manager ne doit gérer le service que lorsque la balle est en train d'être servie
-// la balle a le droit d'être touchée par une raquette mais pas par une zone de service invalide
