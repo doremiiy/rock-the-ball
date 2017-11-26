@@ -204,7 +204,7 @@ public class GameManager : NetworkBehaviour
     private void OnChangeTriggerNewBall(bool newVal)
     {
 
-        Debug.Log("PlayerController trigger new Ball has changed value");
+        Debug.Log("Game Manager: trigger new Ball has changed value");
         UpdateBall();
     }
 

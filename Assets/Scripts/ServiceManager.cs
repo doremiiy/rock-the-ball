@@ -120,6 +120,7 @@ public class ServiceManager : NetworkBehaviour {
             }
             Debug.Log("ServiceManager: set new service zone mesh");
             serviceZones[newIndex].GetComponent<MeshRenderer>().enabled = true;
+            currentServiceZoneIndex = newIndex;
         }
     }
 }
