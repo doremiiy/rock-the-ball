@@ -41,23 +41,30 @@ public class ServiceManager : NetworkBehaviour {
     }
 
     void Start () {
+        
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        serviceZones = GameObject.FindGameObjectsWithTag("ServiceZone");
+        foreach (GameObject serviceZone in serviceZones)
+        {
+            serviceZone.GetComponent<ServiceZone>().ServiceManager = this;
+        }
+        serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
         serviceZones = GameObject.FindGameObjectsWithTag("ServiceZone");
         foreach (GameObject serviceZone in serviceZones)
         {
             serviceZone.GetComponent<ServiceZone>().ServiceManager = this;
         }
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
-    }
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
-    }
-
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
     }
 
     public void HandleService(bool isIn)
