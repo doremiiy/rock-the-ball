@@ -6,5 +6,21 @@ public class Goal : MonoBehaviour {
 
     public Utility.Team team;
     public bool isActive;
+    public GameManager gameManager;
+    public ServiceManager serviceManager;
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Ball"))
+        {
+            if (serviceManager.IsServed)
+            {
+                serviceManager.HandleService(false);
+            } else if (isActive)
+            {
+                gameManager.IncreasePlayerScore(Utility.Opp(team));
+            }
+        }
+    }
 
 }
