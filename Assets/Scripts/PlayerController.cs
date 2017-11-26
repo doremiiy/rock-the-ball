@@ -185,15 +185,6 @@ public class PlayerController : NetworkBehaviour{
 
         transform.Rotate(0, x, 0);
         transform.Translate(0, 0, z);
-
-        // Test code to apply a force on the ball without a htc Vive
-        if (isServer && isLocalPlayer && Input.GetKeyDown(KeyCode.Space))
-        {
-            GameObject ball = GameObject.FindGameObjectWithTag("Ball");
-            Rigidbody rb_Ball = ball.GetComponent<Rigidbody>();
-            ballPosition = ball.transform.position;
-            //ballForce = !ballForceTrigger;  
-        }
     }
 
     // Works only on the server
