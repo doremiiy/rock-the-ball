@@ -103,6 +103,11 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    public int GetPlayerScore(Utility.Team team)
+    {
+        return scores[team];
+    }
+
     private void Start()
     {
         scores = new Dictionary<Utility.Team, int>
@@ -141,9 +146,6 @@ public class GameManager : NetworkBehaviour
         StartNewPoint();
     }
 
-    
-
-
     private void Update()
     {
         if (!isServer)
@@ -159,7 +161,13 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    
+    private void StartNewPoint()
+    {
+        Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
+        NetworkServer.Spawn(Ball);
+        serviceManager.SetNewServiceZone(Utility.Opp(lastPointWinner));
+        triggerNewBall = !triggerNewBall;
+    }
 
     public void IncreasePlayerScore(Utility.Team team)
     {
@@ -177,19 +185,6 @@ public class GameManager : NetworkBehaviour
         {
             triggerPointWin = !triggerPointWin;
         }
-    }
-
-    private void StartNewPoint()
-    {
-        // A new ball is instantiated in front of the player who lost the last point
-        Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
-        NetworkServer.Spawn(Ball);
-        serviceManager.SetNewServiceZone(Utility.Opp(lastPointWinner));
-        triggerNewBall = !triggerNewBall;
-    }
-
-    public int GetPlayerScore(Utility.Team team){
-        return scores[team];
     }
 
     public void RelocateBall(Vector3 newPosition)
