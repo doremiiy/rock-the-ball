@@ -135,7 +135,6 @@ public class GameManager : NetworkBehaviour
         };
         serviceManager = GameObject.FindGameObjectWithTag("ServiceManager").GetComponent<ServiceManager>();
         server = startSide;
-        StartNewPoint();
     }
 
     private void Update()
@@ -145,10 +144,10 @@ public class GameManager : NetworkBehaviour
             return;
         }
 
-        if (MustStartNewPoint && !IsWaitingForPlayers || Input.GetKeyDown(KeyCode.Return))
+        //if (MustStartNewPoint && !IsWaitingForPlayers && Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
-            Debug.Log("Test ok, starting a new point");
-            MustStartNewPoint = false;
+            //MustStartNewPoint = false;
             StartNewPoint();
         }
     }

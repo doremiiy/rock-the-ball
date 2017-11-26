@@ -26,6 +26,19 @@ public class ServiceManager : NetworkBehaviour {
         }
     }
 
+    public bool IsServed
+    {
+        get
+        {
+            return isServed;
+        }
+
+        set
+        {
+            isServed = value;
+        }
+    }
+
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -51,7 +64,7 @@ public class ServiceManager : NetworkBehaviour {
 
     public void HandleService(bool isIn)
     {
-        if (!isServed)
+        if (!IsServed)
         {
             return;
         }
@@ -65,14 +78,14 @@ public class ServiceManager : NetworkBehaviour {
             Debug.Log("Service Out !");
             GameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
         }
-        isServed = false;
+        IsServed = false;
     }
 
 
     public void SetNewServiceZone(Utility.Team sp)
     {
         servingPlayer = sp;
-        isServed = true;
+        IsServed = true;
         ResetServiceZone();
         currentServiceZoneIndex = UnityEngine.Random.Range(0, serviceZones.Length);
         currentServiceZone = serviceZones[currentServiceZoneIndex];
