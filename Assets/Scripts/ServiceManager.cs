@@ -6,7 +6,7 @@ public class ServiceManager : NetworkBehaviour {
     private GameObject[] serviceZones;
     private GameObject currentServiceZone;
     [SyncVar (hook ="OnChangeCurrentServiceZoneIndex")]
-    private int currentServiceZoneIndex;
+    private int currentServiceZoneIndex = -1;
 
     private bool isServed;
     private Utility.Team servingPlayer;
@@ -47,7 +47,10 @@ public class ServiceManager : NetworkBehaviour {
         {
             serviceZone.GetComponent<ServiceZone>().ServiceManager = this;
         }
-        serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
+        if (currentServiceZoneIndex != -1)
+        {
+            serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
+        }
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
     }
 
@@ -72,12 +75,12 @@ public class ServiceManager : NetworkBehaviour {
         if (isIn)
         {
             Debug.Log("Service In !");
-            ResetServiceZone();
         } else
         {
             Debug.Log("Service Out !");
             GameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
         }
+        ResetServiceZone();
         IsServed = false;
     }
 
@@ -86,7 +89,6 @@ public class ServiceManager : NetworkBehaviour {
     {
         servingPlayer = sp;
         IsServed = true;
-        ResetServiceZone();
         currentServiceZoneIndex = UnityEngine.Random.Range(0, serviceZones.Length);
         currentServiceZone = serviceZones[currentServiceZoneIndex];
         currentServiceZone.GetComponent<ServiceZone>().IsValid = true;
