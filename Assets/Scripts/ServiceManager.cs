@@ -1,20 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-
-
-// Responsabilité du service manager ? 
-// Connait toutes les services zones.
-// Connait l'état du service actuel
-// Gère l'actualisation de ces zones
-// Communique avec le gameManager et les serviceZones, pas avec la ball
-
-// Le gameManager connait le service Manager
-// Lors de son start, le gameManager créée un service Manager 
-// knows the player who is serving
-// gives point ? 
-
-
 public class ServiceManager : NetworkBehaviour {
 
     private GameObject[] serviceZones;
@@ -38,10 +24,6 @@ public class ServiceManager : NetworkBehaviour {
         {
             gameManager = value;
         }
-    }
-
-    void Start () {
-        
     }
 
     public override void OnStartClient()
@@ -100,8 +82,11 @@ public class ServiceManager : NetworkBehaviour {
 
     public void ResetServiceZone()
     {
-        currentServiceZone.GetComponent<ServiceZone>().IsValid = false;
-        currentServiceZoneIndex = -1;
+        if (currentServiceZone != null)
+        {
+            currentServiceZone.GetComponent<ServiceZone>().IsValid = false;
+            currentServiceZoneIndex = -1;
+        }
     }
 
     private void OnChangeCurrentServiceZoneIndex(int newIndex)
