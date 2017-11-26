@@ -40,7 +40,7 @@ public class PlayerController : NetworkBehaviour{
             {
                 hand.transform.position = hit.point;
                 currentPosition = hand.transform.position;
-                playerController.BallHit(hand.GetComponent<RacketController>().handSide);
+                playerController.BallHit();
             }   
         }
 
@@ -109,7 +109,7 @@ public class PlayerController : NetworkBehaviour{
 
     public GameManager gameManager;
     public float forceMultiplier;
-    public HandManager rightHand, leftHand;
+    public HandManager firstHand;
     public Camera playerCamera;
     public Utility.Team team;
 
@@ -130,9 +130,8 @@ public class PlayerController : NetworkBehaviour{
 
     private void Start()
     {
-        rightHand.VrNode = VRNode.RightHand;
-        leftHand.VrNode = VRNode.LeftHand;
-		rightHand.PlayerController = leftHand.PlayerController = this;
+        firstHand.VrNode = VRNode.RightHand;
+		firstHand.PlayerController =  this;
 
         // prevent camera swaping when a client joins
         if (!isLocalPlayer && playerCamera.enabled)
@@ -164,12 +163,10 @@ public class PlayerController : NetworkBehaviour{
 
         if (isLocalPlayer)
         {
-            rightHand.Refresh(timeLapse, true);
-            leftHand.Refresh(timeLapse, true);
+            firstHand.Refresh(timeLapse, true);
         } else if (isServer)
         {
-            rightHand.Refresh(timeLapse, false);
-            leftHand.Refresh(timeLapse, false);
+            firstHand.Refresh(timeLapse, false);
         }
     }
 
@@ -201,7 +198,7 @@ public class PlayerController : NetworkBehaviour{
 
     // Works only on the server
     // TODO replace the gameObject parameter with a enum value
-    public void BallHit(Utility.Hand handSide)
+    public void BallHit()
     {
         if (!isServer)
         {
@@ -213,11 +210,8 @@ public class PlayerController : NetworkBehaviour{
         Rigidbody ballRigidbody = gameManager.Ball.GetComponent<Rigidbody>();
         ballForce = Vector3.zero;
 
-        if (handSide == rightHand.hand.GetComponent<RacketController>().handSide)
-            ballForce = rightHand.Speed * forceMultiplier;
-        else if (handSide == leftHand.hand.GetComponent<RacketController>().handSide)
-            ballForce = leftHand.Speed * forceMultiplier;
-
+        
+        ballForce = firstHand.Speed * forceMultiplier;
 
         ballPosition = gameManager.Ball.transform.position;
 

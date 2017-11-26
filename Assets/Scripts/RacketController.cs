@@ -5,7 +5,6 @@ public class RacketController : MonoBehaviour {
 
     private GameObject player;
     private PlayerController playerController;
-    public Utility.Hand handSide;
 
     void Start()
     {
@@ -18,7 +17,7 @@ public class RacketController : MonoBehaviour {
         if (collider.CompareTag("Ball"))
         {
             Debug.Log("Racket Controller : collision detected");
-            playerController.BallHit(handSide);
+            playerController.BallHit();
         }
 	}
 }
