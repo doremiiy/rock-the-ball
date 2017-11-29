@@ -10,13 +10,13 @@ public class GameManager : NetworkBehaviour
 
     public GameObject redPlayerBallSpawn;
     public GameObject bluePlayerBallSpawn;
-    public UIScores uiScores;
+    public UIManager uiManager;
     public GameObject ballPrefab;
     public GameObject ball;
 
     private ServiceManager serviceManager;
 
-    private Dictionary<Utility.Team, int> scores;
+    private Dictionary<Utility.Team, int> score;
 
     private Dictionary<Utility.Team, GameObject> ballSpawnPoints;
 
@@ -96,14 +96,27 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    public Dictionary<Utility.Team, int> Score
+    {
+        get
+        {
+            return score;
+        }
+
+        set
+        {
+            score = value;
+        }
+    }
+
     public int GetPlayerScore(Utility.Team team)
     {
-        return scores[team];
+        return Score[team];
     }
 
     private void Start()
     {
-        scores = new Dictionary<Utility.Team, int>
+        Score = new Dictionary<Utility.Team, int>
         {
             { Utility.Team.BLUE, 0 },
             { Utility.Team.RED, 0 }
@@ -114,6 +127,7 @@ public class GameManager : NetworkBehaviour
     {
         base.OnStartClient();
         serviceManager = GameObject.FindGameObjectWithTag("ServiceManager").GetComponent<ServiceManager>();
+        uiManager = GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>();
         Ball = GameObject.FindGameObjectWithTag("Ball");
     }
 
@@ -134,6 +148,7 @@ public class GameManager : NetworkBehaviour
             { Utility.Team.RED, redPlayerBallSpawn }
         };
         serviceManager = GameObject.FindGameObjectWithTag("ServiceManager").GetComponent<ServiceManager>();
+        uiManager = GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>();
         server = startSide;
     }
 
@@ -163,10 +178,11 @@ public class GameManager : NetworkBehaviour
     public void IncreasePlayerScore(Utility.Team team)
     {
         server = Utility.Opp(team);
-        scores[team]++;
+        Score[team]++;
+        IncrementScore(team);
         Network.Destroy(Ball);
         //uiScores.UpdateScores();
-        if (scores[team] == Utility.winningScore)
+        if (Score[team] == Utility.winningScore)
         {
             //uiScores.DisplayWinText(team);
             triggerGameWin = !triggerGameWin;
@@ -211,5 +227,11 @@ public class GameManager : NetworkBehaviour
     public void UpdateBall()
     {
         Ball = GameObject.FindGameObjectWithTag("Ball");
+    }
+
+    private void IncrementScore(Utility.Team team)
+    {
+        score[team]++;
+        uiManager.TeamScoreTrigger = team;
     }
 }
