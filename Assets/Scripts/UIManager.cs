@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
 public class UIManager : NetworkBehaviour {
 
-    private UIScore[] uiScores;
+    public List<UIScore> uiScores;
     [SyncVar (hook ="OnChangeTeamScoreTrigger")]
     private Utility.Team teamScoreTrigger;
 
@@ -32,22 +31,17 @@ public class UIManager : NetworkBehaviour {
         base.OnStartServer();
     }
 
-    private void Start()
-    {
-        GameObject[] racketControllers = GameObject.FindGameObjectsWithTag("Racket");
-        int index = 0;
-        foreach (GameObject racketController in racketControllers)
-        {
-            uiScores[index++] = racketController.GetComponent<UIScore>();
-        }
-    }
-
     public void IncrementScore(Utility.Team team)
     {
         foreach(UIScore uiScore in uiScores)
         {
             uiScore.IncrementScore(team);
         }
+    }
+
+    public void AddPlayerUI(UIScore uiScore)
+    {
+        uiScores.Add(uiScore);
     }
 
     private void OnChangeTeamScoreTrigger(Utility.Team team)
