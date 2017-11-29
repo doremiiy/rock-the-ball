@@ -8,31 +8,37 @@ using UnityEngine.Networking;
 public class GameManager : NetworkBehaviour
 {
 
+    // Ball spawns
     public GameObject redPlayerBallSpawn;
     public GameObject bluePlayerBallSpawn;
-    public UIManager uiManager;
+    private Dictionary<Utility.Team, GameObject> ballSpawnPoints;
+    // Ball prefab
     public GameObject ballPrefab;
+    // Current ball
     public GameObject ball;
-
+    
+    // Managers
+    public UIManager uiManager;
     private ServiceManager serviceManager;
-
+    
+    // Score
     private Dictionary<Utility.Team, int> score;
 
-    private Dictionary<Utility.Team, GameObject> ballSpawnPoints;
-
-    [SyncVar]
-    private bool triggerGameWin;
-    [SyncVar(hook = "OnChangeTriggerPointWin")]
-    private bool triggerPointWin;
-    [SyncVar]
-    private Utility.Team server;
-
+    // Wait for players between points
     private Dictionary<Utility.Team, bool> playersReady;
     private bool isWaitingForPlayers;
     private bool mustStartNewPoint;
-    [SyncVar (hook ="OnChangeTriggerNewBall")]
+
+    [SyncVar]
+    private bool triggerGameWin;
+    [SyncVar]
+    private Utility.Team server;
+    [SyncVar(hook = "OnChangeTriggerPointWin")]
+    private bool triggerPointWin;
+    [SyncVar(hook = "OnChangeTriggerNewBall")]
     private bool triggerNewBall;
 
+    // Debug only, allow to choose the service side
     public Utility.Team startSide;
 
     public bool IsWaitingForPlayers
@@ -109,11 +115,6 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public int GetPlayerScore(Utility.Team team)
-    {
-        return Score[team];
-    }
-
     private void Start()
     {
         Score = new Dictionary<Utility.Team, int>
@@ -134,14 +135,13 @@ public class GameManager : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        // Only accessed by the server
+
         PlayersReady = new Dictionary<Utility.Team, bool>
         {
             { Utility.Team.BLUE, true},
             { Utility.Team.RED, true}
         };
 
-        // Only accessed by the server
         ballSpawnPoints = new Dictionary<Utility.Team, GameObject>
         {
             { Utility.Team.BLUE, bluePlayerBallSpawn },
@@ -219,8 +219,6 @@ public class GameManager : NetworkBehaviour
 
     private void OnChangeTriggerNewBall(bool newVal)
     {
-
-        Debug.Log("Game Manager: trigger new Ball has changed value");
         UpdateBall();
     }
 
