@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 2e24283ab2123cc4fb63b7daf075e3dc
+timeCreated: 1511975415
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Hermes
+  fontNames:
+  - Hermes
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
