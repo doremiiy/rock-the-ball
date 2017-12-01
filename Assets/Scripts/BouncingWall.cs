@@ -7,6 +7,7 @@ public class BouncingWall : MonoBehaviour {
     private Vector3 wallNormal = new Vector3();
     public float BouncingMultiplier;
     public ServiceManager serviceManager;
+    public SoundManager soundManager;
 
 
     private void Start()
@@ -28,6 +29,7 @@ public class BouncingWall : MonoBehaviour {
                 ballSpeed = Vector3.Project(ballSpeed, wallNormal);
                 Vector3 force = -ballSpeed * BouncingMultiplier;
                 ballRigidbody.AddForce(force, ForceMode.Impulse);
+                soundManager.PlaySound("WallHit");
             }
         }
     }

@@ -6,6 +6,8 @@ public class SoundManager : MonoBehaviour {
 
     // Sounds
     public AudioClip goalSound;
+    public AudioClip wallHit;
+    public AudioClip racketHit;
 
     private Dictionary<string, AudioClip> sounds;
 
@@ -29,7 +31,9 @@ public class SoundManager : MonoBehaviour {
     {
         Sounds = new Dictionary<string, AudioClip>
         {
-            { "Goal", goalSound }
+            { "Goal", goalSound },
+            { "WallHit", wallHit },
+            { "RacketHit", racketHit}
         };
         soundSource = GetComponent<AudioSource>();
 
