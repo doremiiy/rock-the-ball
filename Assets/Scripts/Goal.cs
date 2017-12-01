@@ -8,6 +8,7 @@ public class Goal : MonoBehaviour {
     public bool isActive;
     public GameManager gameManager;
     public ServiceManager serviceManager;
+    public SoundManager soundManager;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -19,8 +20,8 @@ public class Goal : MonoBehaviour {
             } else if (isActive)
             {
                 gameManager.IncreasePlayerScore(Utility.Opp(team));
+                soundManager.PlaySound("Goal");
             }
         }
     }
-
 }

@@ -139,6 +139,7 @@ public class PlayerController : NetworkBehaviour{
         if (!isLocalPlayer && playerCamera.enabled)
         {
             playerCamera.enabled = false;
+            GetComponent<AudioListener>().enabled = false;
         }
 
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
