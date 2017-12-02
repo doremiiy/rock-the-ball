@@ -10,6 +10,8 @@ public class Goal : MonoBehaviour {
     public ServiceManager serviceManager;
     public SoundManager soundManager;
 
+    public GameObject plasmaExplosion;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Ball"))
@@ -21,6 +23,7 @@ public class Goal : MonoBehaviour {
             {
                 gameManager.IncreasePlayerScore(Utility.Opp(team));
                 soundManager.PlaySound("Goal");
+                Instantiate(plasmaExplosion, other.transform.position, Quaternion.identity);
             }
         }
     }
