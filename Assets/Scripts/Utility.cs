@@ -6,7 +6,8 @@ using UnityEngine;
 public class Utility {
 
     public enum Team { BLUE, RED };
-    public enum Hand { FIRST, SECONDARY};
+    public enum Hand { FIRST, SECONDARY };
+    public enum TrainingStep { INITIAL, GOAL, SERVICE, FREE };
 
     static public int winningScore = 15;
 

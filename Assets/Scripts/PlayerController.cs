@@ -197,6 +197,12 @@ public class PlayerController : NetworkBehaviour{
         ballForce = Vector3.zero;
         ballForce = firstHand.Speed * forceMultiplier;
         ballPosition = gameManager.Ball.transform.position;
+
+        // If in training mode, allows to go the next step
+        if (GameState.training && gameManager.TrainingStep == Utility.TrainingStep.INITIAL)
+        {
+            gameManager.CanAccessNextStep = true;
+        }
     }
 
     private void OnChangeBallPosition(Vector3 newBallPosition)

@@ -29,6 +29,10 @@ public class GameManager : NetworkBehaviour
     private bool isWaitingForPlayers;
     private bool mustStartNewPoint;
 
+    // Training only
+    private bool canAccessNextStep;
+    private Utility.TrainingStep trainingStep;
+
     [SyncVar]
     private bool triggerGameWin;
     [SyncVar]
@@ -115,6 +119,32 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    public bool CanAccessNextStep
+    {
+        get
+        {
+            return canAccessNextStep;
+        }
+
+        set
+        {
+            canAccessNextStep = value;
+        }
+    }
+
+    public Utility.TrainingStep TrainingStep
+    {
+        get
+        {
+            return trainingStep;
+        }
+
+        set
+        {
+            trainingStep = value;
+        }
+    }
+
     private void Start()
     {
         Score = new Dictionary<Utility.Team, int>
@@ -149,7 +179,25 @@ public class GameManager : NetworkBehaviour
         };
         serviceManager = GameObject.FindGameObjectWithTag("ServiceManager").GetComponent<ServiceManager>();
         uiManager = GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>();
-        server = startSide;
+        server = startSide; 
+        
+        // launch the training sequence
+        if (GameState.training)
+        {
+            TrainingStep = Utility.TrainingStep.INITIAL;
+            GameObject[] goals = GameObject.FindGameObjectsWithTag("Goal");
+
+            // Disable goals and replace by a bouncing wall
+            foreach (GameObject goal in goals)
+            {
+                goal.AddComponent<BouncingWall>();
+                goal.GetComponent<Goal>().isActive = false;
+            }
+
+            StartNewTrainingPoint();
+            // TODO add a vocal message to tell the player to hit the ball
+            // When the ball was hit once, enable next step on trigger input
+        }
     }
 
     private void Update()
@@ -160,12 +208,67 @@ public class GameManager : NetworkBehaviour
         }
 
         //if (MustStartNewPoint && !IsWaitingForPlayers && Input.GetKeyDown(KeyCode.Return))
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return) && !GameState.training)
         {
             //MustStartNewPoint = false;
             StartNewPoint();
         }
+
+        if (GameState.training)
+        {
+            if (CanAccessNextStep && Input.GetKeyDown(KeyCode.Return))
+            {
+                TrainingStep++;
+                CanAccessNextStep = false;
+                StartNewTrainingPoint();
+            }
+        }
     }
+
+    private void StartNewTrainingPoint()
+    {
+        switch (TrainingStep)
+        {
+            case Utility.TrainingStep.INITIAL:
+                Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
+                NetworkServer.Spawn(Ball);
+                triggerNewBall = !triggerNewBall;
+                break;
+
+            case Utility.TrainingStep.GOAL:
+                GameObject[] goals = GameObject.FindGameObjectsWithTag("Goal");
+                foreach (GameObject goal in goals)
+                {
+                    Goal goalScript = goal.GetComponent<Goal>();
+                    if (goalScript.team == Utility.Opp(GameState.trainingTeam))
+                    {
+                        goalScript.isActive = true;
+                    }
+                }
+                break;
+
+            case Utility.TrainingStep.SERVICE:
+                // TODO add some textual and audio advice for the player about the service
+                StartNewPoint();
+                break;
+
+            case Utility.TrainingStep.FREE:
+                // TODO add some textual and audio advice for the player about the free training
+                StartNewPoint();
+                break;
+
+            default:
+                Debug.Log("GameManager: error, unsupported training step reached");
+                break;
+        }
+    }
+
+    //private void SpawnTutorialBall()
+    //{
+    //    Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.team].transform.position, Quaternion.identity);
+    //    NetworkServer.Spawn(Ball);
+    //    triggerNewBall = !triggerNewBall;
+    //}
 
     private void StartNewPoint()
     {
@@ -177,11 +280,17 @@ public class GameManager : NetworkBehaviour
 
     public void IncreasePlayerScore(Utility.Team team)
     {
-        server = Utility.Opp(team);
+        if (!GameState.training)
+        {
+            server = Utility.Opp(team);
+        }
+        else
+        {
+            server = GameState.trainingTeam;
+        }
         Score[team]++;
         IncrementScore(team);
         Network.Destroy(Ball);
-        //uiScores.UpdateScores();
         if (Score[team] == Utility.winningScore)
         {
             //uiScores.DisplayWinText(team);
@@ -189,7 +298,7 @@ public class GameManager : NetworkBehaviour
             // TODO End of the game
         }
         else
-        {
+        {   
             triggerPointWin = !triggerPointWin;
         }
     }
@@ -215,6 +324,11 @@ public class GameManager : NetworkBehaviour
         //IsWaitingForPlayers = true;
         IsWaitingForPlayers = false;
         MustStartNewPoint = true;
+
+        if (GameState.training)
+        {
+            CanAccessNextStep = true;
+        }
     }
 
     private void OnChangeTriggerNewBall(bool newVal)
