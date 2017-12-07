@@ -12,4 +12,10 @@ public class MainMenu : MonoBehaviour {
     {
         Application.Quit();
     }
+
+    public void TrainingButton()
+    {
+        GameState.training = true;
+        StartButton();
+    }
 }
