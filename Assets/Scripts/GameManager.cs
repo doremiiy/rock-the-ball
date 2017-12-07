@@ -193,8 +193,7 @@ public class GameManager : NetworkBehaviour
                 goal.AddComponent<BouncingWall>();
                 goal.GetComponent<Goal>().isActive = false;
             }
-
-            StartNewTrainingPoint();
+            StartCoroutine(WaitForInitialization(0.1f));
             // TODO add a vocal message to tell the player to hit the ball
             // When the ball was hit once, enable next step on trigger input
         }
@@ -227,9 +226,11 @@ public class GameManager : NetworkBehaviour
 
     private void StartNewTrainingPoint()
     {
+        Debug.Log("Training Point");
         switch (TrainingStep)
         {
             case Utility.TrainingStep.INITIAL:
+                Debug.Log("Training team = " + GameState.trainingTeam);
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
                 NetworkServer.Spawn(Ball);
                 triggerNewBall = !triggerNewBall;
@@ -262,13 +263,6 @@ public class GameManager : NetworkBehaviour
                 break;
         }
     }
-
-    //private void SpawnTutorialBall()
-    //{
-    //    Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.team].transform.position, Quaternion.identity);
-    //    NetworkServer.Spawn(Ball);
-    //    triggerNewBall = !triggerNewBall;
-    //}
 
     private void StartNewPoint()
     {
@@ -345,5 +339,11 @@ public class GameManager : NetworkBehaviour
     {
         score[team]++;
         uiManager.TeamScoreTrigger = team;
+    }
+
+    IEnumerator WaitForInitialization(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        StartNewTrainingPoint();
     }
 }

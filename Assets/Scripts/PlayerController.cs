@@ -161,10 +161,12 @@ public class PlayerController : NetworkBehaviour{
             if (redPlayerSpawn.transform.position == transform.position)
             {
                 GameState.trainingTeam = Utility.Team.RED;
+                team = Utility.Team.RED;
                 Debug.Log("playerController: redPlayerSpawn found");
             } else if (bluePlayerSpawn.transform.position == transform.position)
             {
                 GameState.trainingTeam = Utility.Team.BLUE;
+                team = Utility.Team.BLUE;
                 Debug.Log("playerController: bluePlayerSpawn found");
             }
             else
