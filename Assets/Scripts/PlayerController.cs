@@ -153,6 +153,28 @@ public class PlayerController : NetworkBehaviour{
     public override void OnStartServer()
     {
         base.OnStartServer();
+        if (GameState.training)
+        {
+            GameObject redPlayerSpawn = GameObject.FindGameObjectWithTag("RedPlayerSpawn");
+            GameObject bluePlayerSpawn = GameObject.FindGameObjectWithTag("BluePlayerSpawn");
+            
+            if (redPlayerSpawn.transform.position == transform.position)
+            {
+                GameState.trainingTeam = Utility.Team.RED;
+                Debug.Log("playerController: redPlayerSpawn found");
+            } else if (bluePlayerSpawn.transform.position == transform.position)
+            {
+                GameState.trainingTeam = Utility.Team.BLUE;
+                Debug.Log("playerController: bluePlayerSpawn found");
+            }
+            else
+            {
+                Debug.Log("PlayerController ERROR: The player spawn wasn't found");
+                Debug.Log("redPlayerSpawn = " + redPlayerSpawn.transform.position);
+                Debug.Log("bluePlayerSpawn = " + bluePlayerSpawn.transform.position);
+                Debug.Log("player position = " + transform.position);
+            }
+        }
     }
 
 
