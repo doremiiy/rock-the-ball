@@ -31,9 +31,9 @@ public class Goal : MonoBehaviour {
                 soundManager.PlaySound("Goal");
                 Instantiate(plasmaExplosion, other.transform.position, Quaternion.identity);
 
-                if (GameState.training && 
-                    gameManager.TrainingStep == Utility.TrainingStep.GOAL &&
-                    gameManager.TrainingStep == Utility.TrainingStep.SERVICE)
+                if (GameState.training &&  
+                    (gameManager.TrainingStep == Utility.TrainingStep.GOAL ||
+                    gameManager.TrainingStep == Utility.TrainingStep.SERVICE))
                 {
                     gameManager.CanAccessNextStep = true;
                 }

@@ -230,11 +230,9 @@ public class GameManager : NetworkBehaviour
 
     private void StartNewTrainingPoint()
     {
-        Debug.Log("Training Point");
         switch (TrainingStep)
         {
             case Utility.TrainingStep.INITIAL:
-                Debug.Log("Training team = " + GameState.trainingTeam);
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
                 NetworkServer.Spawn(Ball);
                 break;
@@ -243,27 +241,20 @@ public class GameManager : NetworkBehaviour
                 Network.Destroy(Ball);
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
                 NetworkServer.Spawn(Ball);
-                //triggerNewBall = !triggerNewBall;
-                GameObject[] goals = GameObject.FindGameObjectsWithTag("Goal");
-                foreach (GameObject goal in goals)
-                {
-                    Goal goalScript = goal.GetComponent<Goal>();
-                    if (goalScript.team == Utility.Opp(GameState.trainingTeam))
-                    {
-                        goalScript.isActive = true;
-                        goal.GetComponent<BouncingWall>().isActive = false;
-                    }
-                }
+                GoalActivationSwitch(true);
                 break;
 
+            // TODO when a service is failed, reinstantiate a ball
             case Utility.TrainingStep.SERVICE:
                 // TODO add some textual and audio advice for the player about the service
                 StartNewPoint();
                 break;
-
+            // TODO disable the ball and the goal
             case Utility.TrainingStep.FREE:
                 // TODO add some textual and audio advice for the player about the free training
-                StartNewPoint();
+                Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
+                NetworkServer.Spawn(Ball);
+                GoalActivationSwitch(false);
                 break;
 
             default:
@@ -272,12 +263,21 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    public void ReplaceBall()
+    {
+        Network.Destroy(Ball);
+        StartNewPoint();
+    }
+
     private void StartNewPoint()
     {
         Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
         NetworkServer.Spawn(Ball);
         serviceManager.SetNewServiceZone(server);
-        triggerNewBall = !triggerNewBall;
+        if (!GameState.training)
+        {
+            triggerNewBall = !triggerNewBall;
+        }
     }
 
     public void IncreasePlayerScore(Utility.Team team)
@@ -315,9 +315,7 @@ public class GameManager : NetworkBehaviour
     }
 
     private void OnChangeTriggerPointWin(bool newVal)
-    {
-        Debug.Log("Trigger point win ok, waiting for players");
-        
+    {        
         foreach (Utility.Team team in Enum.GetValues(typeof(Utility.Team)))
         {
             // TODO better client side handling of this shit
@@ -326,11 +324,6 @@ public class GameManager : NetworkBehaviour
         //IsWaitingForPlayers = true;
         IsWaitingForPlayers = false;
         MustStartNewPoint = true;
-
-        if (GameState.training)
-        {
-            CanAccessNextStep = true;
-        }
     }
 
     private void OnChangeTriggerNewBall(bool newVal)
@@ -341,13 +334,26 @@ public class GameManager : NetworkBehaviour
     public void UpdateBall()
     {
         Ball = GameObject.FindGameObjectWithTag("Ball");
-        Debug.Log(Ball.GetComponent<Rigidbody>());
     }
 
     private void IncrementScore(Utility.Team team)
     {
         score[team]++;
         uiManager.TeamScoreTrigger = team;
+    }
+
+    private void GoalActivationSwitch(bool isEnable)
+    {
+        GameObject[] goals = GameObject.FindGameObjectsWithTag("Goal");
+        foreach (GameObject goal in goals)
+        {
+            Goal goalScript = goal.GetComponent<Goal>();
+            if (goalScript.team == Utility.Opp(GameState.trainingTeam))
+            {
+                goalScript.isActive = isEnable;
+                goal.GetComponent<BouncingWall>().isActive = !isEnable;
+            }
+        }
     }
 
     IEnumerator WaitForInitialization(float waitTime)

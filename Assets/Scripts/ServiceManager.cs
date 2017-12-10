@@ -72,16 +72,24 @@ public class ServiceManager : NetworkBehaviour {
             return;
         }
 
+        ResetServiceZone();
+
+        IsServed = false;
+
         if (isIn)
         {
             Debug.Log("Service In !");
         } else
         {
             Debug.Log("Service Out !");
-            GameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
+            if (!GameState.training)
+            {
+                GameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
+            } else
+            {
+                GameManager.ReplaceBall();
+            }
         }
-        ResetServiceZone();
-        IsServed = false;
     }
 
 
