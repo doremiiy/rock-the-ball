@@ -8,6 +8,11 @@ public class SoundManager : MonoBehaviour {
     public AudioClip goalSound;
     public AudioClip wallHit;
     public AudioClip racketHit;
+    public AudioClip trainingInitial;
+    public AudioClip trainingGoal;
+    public AudioClip trainingService;
+    public AudioClip trainingFree;
+
 
     private Dictionary<string, AudioClip> sounds;
 
@@ -33,7 +38,11 @@ public class SoundManager : MonoBehaviour {
         {
             { "Goal", goalSound },
             { "WallHit", wallHit },
-            { "RacketHit", racketHit}
+            { "RacketHit", racketHit},
+            { "TrainingInitial", trainingInitial },
+            { "TrainingGoal", trainingGoal },
+            { "TrainingService", trainingService },
+            { "TrainingFree", trainingFree}
         };
         soundSource = GetComponent<AudioSource>();
 

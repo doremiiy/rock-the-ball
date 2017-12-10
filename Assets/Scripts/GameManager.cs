@@ -20,6 +20,7 @@ public class GameManager : NetworkBehaviour
     // Managers
     public UIManager uiManager;
     private ServiceManager serviceManager;
+    private SoundManager soundManager;
     
     // Score
     private Dictionary<Utility.Team, int> score;
@@ -159,6 +160,7 @@ public class GameManager : NetworkBehaviour
         base.OnStartClient();
         serviceManager = GameObject.FindGameObjectWithTag("ServiceManager").GetComponent<ServiceManager>();
         uiManager = GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>();
+        soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
         Ball = GameObject.FindGameObjectWithTag("Ball");
     }
 
@@ -179,20 +181,14 @@ public class GameManager : NetworkBehaviour
         };
         serviceManager = GameObject.FindGameObjectWithTag("ServiceManager").GetComponent<ServiceManager>();
         uiManager = GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>();
+        soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
         server = startSide; 
         
         // launch the training sequence
         if (GameState.training)
         {
             TrainingStep = Utility.TrainingStep.INITIAL;
-            GameObject[] goals = GameObject.FindGameObjectsWithTag("Goal");
-
-            // Disable goals and replace by a bouncing wall
-            foreach (GameObject goal in goals)
-            {
-                goal.GetComponent<Goal>().isActive = false;
-                goal.GetComponent<BouncingWall>().isActive = true;
-            }
+            SwitchGoalActivation(false);
             StartCoroutine(WaitForInitialization(0.1f));
             // TODO add a vocal message to tell the player to hit the ball
             // When the ball was hit once, enable next step on trigger input
@@ -239,19 +235,21 @@ public class GameManager : NetworkBehaviour
                     Ball.transform.Rotate(new Vector3(0f, 180f, 0f));
                 }
                 Ball.GetComponent<Ball>().SwitchBallUIActivation(true);
+                soundManager.PlaySound("TrainingInitial");
                 NetworkServer.Spawn(Ball);
                 break;
 
             case Utility.TrainingStep.GOAL:
                 Network.Destroy(Ball);
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
+                soundManager.PlaySound("TrainingGoal");
                 NetworkServer.Spawn(Ball);
                 SwitchGoalActivation(true);
                 break;
 
             // TODO when a service is failed, reinstantiate a ball
             case Utility.TrainingStep.SERVICE:
-                // TODO add some textual and audio advice for the player about the service
+                soundManager.PlaySound("TrainingService");
                 StartNewPoint();
                 break;
             // TODO disable the ball and the goal
@@ -259,6 +257,7 @@ public class GameManager : NetworkBehaviour
                 // TODO add some textual and audio advice for the player about the free training
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
                 NetworkServer.Spawn(Ball);
+                soundManager.PlaySound("TrainingFree");
                 SwitchGoalActivation(false);
                 break;
 
@@ -350,14 +349,12 @@ public class GameManager : NetworkBehaviour
     private void SwitchGoalActivation(bool isEnabled)
     {
         GameObject[] goals = GameObject.FindGameObjectsWithTag("Goal");
+
+        // Disable goals and replace by a bouncing wall
         foreach (GameObject goal in goals)
         {
-            Goal goalScript = goal.GetComponent<Goal>();
-            if (goalScript.team == Utility.Opp(GameState.trainingTeam))
-            {
-                goalScript.isActive = isEnabled;
-                goal.GetComponent<BouncingWall>().isActive = !isEnabled;
-            }
+            goal.GetComponent<Goal>().isActive = isEnabled;
+            goal.GetComponent<BouncingWall>().isActive = !isEnabled;
         }
     }
 
