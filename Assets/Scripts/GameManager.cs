@@ -213,6 +213,10 @@ public class GameManager : NetworkBehaviour
             StartNewPoint();
         }
 
+        // TODO refactor all this logic in another class
+        // TODO refactor the playerController code
+        // Maybe a class to play without the network
+        // Something with inheritance
         if (GameState.training)
         {
             if (CanAccessNextStep && Input.GetKeyDown(KeyCode.Return))
@@ -232,14 +236,14 @@ public class GameManager : NetworkBehaviour
             case Utility.TrainingStep.INITIAL:
                 Debug.Log("Training team = " + GameState.trainingTeam);
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
-                //NetworkServer.Spawn(Ball);
-                triggerNewBall = !triggerNewBall;
+                NetworkServer.Spawn(Ball);
                 break;
 
             case Utility.TrainingStep.GOAL:
-                //Destroy(Ball);
+                Network.Destroy(Ball);
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
-                triggerNewBall = !triggerNewBall;
+                NetworkServer.Spawn(Ball);
+                //triggerNewBall = !triggerNewBall;
                 GameObject[] goals = GameObject.FindGameObjectsWithTag("Goal");
                 foreach (GameObject goal in goals)
                 {
