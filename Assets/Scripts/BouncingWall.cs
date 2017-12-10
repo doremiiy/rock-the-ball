@@ -5,10 +5,10 @@ using UnityEngine;
 public class BouncingWall : MonoBehaviour {
 
     private Vector3 wallNormal = new Vector3();
+    public bool isActive = true;
     public float BouncingMultiplier;
     public ServiceManager serviceManager;
     public SoundManager soundManager;
-
 
     private void Start()
     {
@@ -17,13 +17,14 @@ public class BouncingWall : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Ball"))
+        if (isActive && other.CompareTag("Ball"))
         {   
             if (serviceManager.IsServed)
             {
                 serviceManager.HandleService(false);
             } else
             {
+                Debug.Log("OK");
                 Rigidbody ballRigidbody = other.GetComponent<Rigidbody>();
                 Vector3 ballSpeed = ballRigidbody.velocity;
                 ballSpeed = Vector3.Project(ballSpeed, wallNormal);

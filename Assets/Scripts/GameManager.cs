@@ -190,8 +190,8 @@ public class GameManager : NetworkBehaviour
             // Disable goals and replace by a bouncing wall
             foreach (GameObject goal in goals)
             {
-                goal.AddComponent<BouncingWall>();
                 goal.GetComponent<Goal>().isActive = false;
+                goal.GetComponent<BouncingWall>().isActive = true;
             }
             StartCoroutine(WaitForInitialization(0.1f));
             // TODO add a vocal message to tell the player to hit the ball
@@ -232,11 +232,14 @@ public class GameManager : NetworkBehaviour
             case Utility.TrainingStep.INITIAL:
                 Debug.Log("Training team = " + GameState.trainingTeam);
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
-                NetworkServer.Spawn(Ball);
+                //NetworkServer.Spawn(Ball);
                 triggerNewBall = !triggerNewBall;
                 break;
 
             case Utility.TrainingStep.GOAL:
+                //Destroy(Ball);
+                Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
+                triggerNewBall = !triggerNewBall;
                 GameObject[] goals = GameObject.FindGameObjectsWithTag("Goal");
                 foreach (GameObject goal in goals)
                 {
@@ -244,6 +247,7 @@ public class GameManager : NetworkBehaviour
                     if (goalScript.team == Utility.Opp(GameState.trainingTeam))
                     {
                         goalScript.isActive = true;
+                        goal.GetComponent<BouncingWall>().isActive = false;
                     }
                 }
                 break;
@@ -333,6 +337,7 @@ public class GameManager : NetworkBehaviour
     public void UpdateBall()
     {
         Ball = GameObject.FindGameObjectWithTag("Ball");
+        Debug.Log(Ball.GetComponent<Rigidbody>());
     }
 
     private void IncrementScore(Utility.Team team)
@@ -344,6 +349,7 @@ public class GameManager : NetworkBehaviour
     IEnumerator WaitForInitialization(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
+        CanAccessNextStep = false;
         StartNewTrainingPoint();
     }
 }
