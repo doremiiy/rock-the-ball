@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class GameState {
 
-    static public bool training = false;
+    static public bool training = true;
     static public Utility.Team trainingTeam;
 }

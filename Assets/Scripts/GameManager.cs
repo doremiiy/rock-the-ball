@@ -234,6 +234,10 @@ public class GameManager : NetworkBehaviour
         {
             case Utility.TrainingStep.INITIAL:
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
+                if (GameState.trainingTeam == Utility.Team.BLUE)
+                {
+                    Ball.transform.Rotate(new Vector3(0f, 180f, 0f));
+                }
                 Ball.GetComponent<Ball>().SwitchBallUIActivation(true);
                 NetworkServer.Spawn(Ball);
                 break;
