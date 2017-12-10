@@ -7,18 +7,23 @@ public class Ball : NetworkBehaviour {
 	private Rigidbody rb;
 	public Vector3 testForce;
     public float maxSpeed = 1000f;
-    public GameManager gameManager;
+    public GameObject ballUI;
 
-    void Start () {
+    private void Start () {
         rb = GetComponent<Rigidbody>();
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         // Speed cap
         if (rb.velocity.magnitude > maxSpeed)
         {
             rb.velocity = rb.velocity.normalized * maxSpeed;
         }
+    }
+
+    public void SwitchBallUIActivation(bool isEnabled)
+    {
+        ballUI.SetActive(isEnabled);
     }
 }

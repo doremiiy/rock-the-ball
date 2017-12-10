@@ -234,6 +234,7 @@ public class GameManager : NetworkBehaviour
         {
             case Utility.TrainingStep.INITIAL:
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
+                Ball.GetComponent<Ball>().SwitchBallUIActivation(true);
                 NetworkServer.Spawn(Ball);
                 break;
 
@@ -241,7 +242,7 @@ public class GameManager : NetworkBehaviour
                 Network.Destroy(Ball);
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
                 NetworkServer.Spawn(Ball);
-                GoalActivationSwitch(true);
+                SwitchGoalActivation(true);
                 break;
 
             // TODO when a service is failed, reinstantiate a ball
@@ -254,7 +255,7 @@ public class GameManager : NetworkBehaviour
                 // TODO add some textual and audio advice for the player about the free training
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
                 NetworkServer.Spawn(Ball);
-                GoalActivationSwitch(false);
+                SwitchGoalActivation(false);
                 break;
 
             default:
@@ -342,7 +343,7 @@ public class GameManager : NetworkBehaviour
         uiManager.TeamScoreTrigger = team;
     }
 
-    private void GoalActivationSwitch(bool isEnable)
+    private void SwitchGoalActivation(bool isEnabled)
     {
         GameObject[] goals = GameObject.FindGameObjectsWithTag("Goal");
         foreach (GameObject goal in goals)
@@ -350,8 +351,8 @@ public class GameManager : NetworkBehaviour
             Goal goalScript = goal.GetComponent<Goal>();
             if (goalScript.team == Utility.Opp(GameState.trainingTeam))
             {
-                goalScript.isActive = isEnable;
-                goal.GetComponent<BouncingWall>().isActive = !isEnable;
+                goalScript.isActive = isEnabled;
+                goal.GetComponent<BouncingWall>().isActive = !isEnabled;
             }
         }
     }
