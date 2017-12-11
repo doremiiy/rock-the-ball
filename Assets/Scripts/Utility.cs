@@ -10,6 +10,7 @@ public class Utility {
     public enum TrainingStep { INITIAL, GOAL, SERVICE, FREE };
 
     static public int winningScore = 15;
+    static public string trainingNextStepText = "Well done ! \n Use the trigger to go on to the next training step";
 
     static public Team Opp(Team team)
     {
@@ -33,5 +34,23 @@ public class Utility {
         System.Random random = new System.Random();
         Team randomTeam = (Team)teams.GetValue(random.Next(teams.Length));
         return randomTeam;
+    }
+
+    static public string GetWinningText(Team winningTeam)
+    {
+        string winningText = "";
+
+        if (winningTeam == Team.RED)
+        {
+            winningText = "Red player wins the game !";
+        } else if (winningTeam == Team.BLUE)
+        {
+            winningText = "Blue player wins the game !";
+        } else
+        {
+            Debug.Log("Utility: Unrecognized team");
+        }
+
+        return winningText;
     }
 }

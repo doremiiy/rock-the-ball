@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class UIManager : NetworkBehaviour {
 
@@ -32,11 +33,14 @@ public class UIManager : NetworkBehaviour {
         base.OnStartServer();
     }
 
-    public void ShowMainText()
+    public void ShowTrainingText()
     {
         GameObject text = mainUI.transform.Find("MainText").gameObject;
+        text.GetComponent<Text>().text = Utility.trainingNextStepText;
         text.SetActive(true);
     }
+
+
 
     public void HideMainText()
     {

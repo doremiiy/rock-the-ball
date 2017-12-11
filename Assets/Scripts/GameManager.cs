@@ -359,7 +359,7 @@ public class GameManager : NetworkBehaviour
     public void AccessNextTrainingStep()
     {
         CanAccessNextStep = true;
-        uiManager.ShowMainText();
+        uiManager.ShowTrainingText();
     }
 
     IEnumerator WaitForInitialization(float waitTime)
