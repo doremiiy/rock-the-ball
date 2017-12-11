@@ -231,10 +231,7 @@ public class GameManager : NetworkBehaviour
         {
             case Utility.TrainingStep.INITIAL:
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
-                if (GameState.trainingTeam == Utility.Team.BLUE)
-                {
-                    Ball.transform.Rotate(new Vector3(0f, 180f, 0f));
-                }
+                Ball.transform.Rotate(GameState.trainingBallRotation);
                 Ball.GetComponent<Ball>().SwitchBallUIActivation(true);
                 soundManager.PlaySound("TrainingInitial");
                 NetworkServer.Spawn(Ball);
@@ -369,6 +366,19 @@ public class GameManager : NetworkBehaviour
     {
         yield return new WaitForSeconds(waitTime);
         CanAccessNextStep = false;
+        if (GameState.trainingTeam == Utility.Team.BLUE)
+        {
+            GameState.trainingBallRotation = new Vector3(0f, 180f, 0f);
+            GameState.mainUIRotation = new Vector3(0f, 180f, 0f);
+        } else if (GameState.trainingTeam == Utility.Team.RED)
+        {
+            GameState.trainingBallRotation = Vector3.zero;
+            GameState.mainUIRotation = Vector3.zero;
+        } else
+        {
+            Debug.Log("GameManager Error: unsupported team");
+        }
+        uiManager.SetUpMainUI();
         StartNewTrainingPoint();
     }
 }

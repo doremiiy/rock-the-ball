@@ -32,11 +32,6 @@ public class UIManager : NetworkBehaviour {
         base.OnStartServer();
     }
 
-    private void Start()
-    {
-        mainUI = GameObject.FindGameObjectWithTag("MainUI");
-    }
-
     public void ShowMainText()
     {
         GameObject text = mainUI.transform.Find("MainText").gameObject;
@@ -65,5 +60,11 @@ public class UIManager : NetworkBehaviour {
     private void OnChangeTeamScoreTrigger(Utility.Team team)
     {
         IncrementScore(team);
+    }
+
+    public void SetUpMainUI()
+    {
+        mainUI = GameObject.FindGameObjectWithTag("MainUI");
+        mainUI.transform.Rotate(GameState.mainUIRotation);
     }
 }
