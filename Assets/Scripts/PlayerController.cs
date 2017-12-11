@@ -124,7 +124,9 @@ public class PlayerController : NetworkBehaviour{
     // Player spawn
     public GameObject playerSpawn;
 
+    // Mutlipliers for the ball collision
     public float forceMultiplier;
+    public float compensationDivisor;
 
     // TODO move this logic in a new Ball Manager class
     // Ball force trigger
@@ -158,7 +160,8 @@ public class PlayerController : NetworkBehaviour{
        
         GameObject redPlayerSpawn = GameObject.FindGameObjectWithTag("RedPlayerSpawn");
         GameObject bluePlayerSpawn = GameObject.FindGameObjectWithTag("BluePlayerSpawn");
-            
+        
+        // Player spawn Detection
         if (redPlayerSpawn.transform.position == transform.position)
         {
             GameState.trainingTeam = Utility.Team.RED;
@@ -226,9 +229,9 @@ public class PlayerController : NetworkBehaviour{
         }
 
         // TODO replace the force application by an update of the ball's velocity
-        Rigidbody ballRigidbody = gameManager.Ball.GetComponent<Rigidbody>();
         ballForce = Vector3.zero;
-        ballForce = firstHand.Speed * forceMultiplier;
+        ballForce = -gameManager.Ball.GetComponent<Rigidbody>().velocity / compensationDivisor;
+        ballForce += firstHand.Speed * forceMultiplier;
         ballPosition = gameManager.Ball.transform.position;
 
         // If in training mode, allows to go the next step
