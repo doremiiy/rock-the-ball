@@ -40,7 +40,12 @@ public class UIManager : NetworkBehaviour {
         text.SetActive(true);
     }
 
-
+    public void ShowWinningText(Utility.Team winningTeam)
+    {
+        GameObject text = mainUI.transform.Find("MainText").gameObject;
+        text.GetComponent<Text>().text = Utility.GetWinningText(winningTeam);
+        text.SetActive(true);
+    }
 
     public void HideMainText()
     {

@@ -34,12 +34,13 @@ public class GameManager : NetworkBehaviour
     private bool canAccessNextStep;
     private Utility.TrainingStep trainingStep;
 
-    [SyncVar]
-    private bool triggerGameWin;
+
     [SyncVar]
     private Utility.Team server;
     [SyncVar(hook = "OnChangeTriggerPointWin")]
     private bool triggerPointWin;
+    [SyncVar(hook = "OnChangeTriggerGameWin")]
+    private bool triggerGameWin;
     [SyncVar(hook = "OnChangeTriggerNewBall")]
     private bool triggerNewBall;
 
@@ -190,8 +191,6 @@ public class GameManager : NetworkBehaviour
             TrainingStep = Utility.TrainingStep.INITIAL;
             SwitchGoalActivation(false);
             StartCoroutine(WaitForInitialization(0.1f));
-            // TODO add a vocal message to tell the player to hit the ball
-            // When the ball was hit once, enable next step on trigger input
         }
     }
 
@@ -245,14 +244,12 @@ public class GameManager : NetworkBehaviour
                 SwitchGoalActivation(true);
                 break;
 
-            // TODO when a service is failed, reinstantiate a ball
             case Utility.TrainingStep.SERVICE:
                 soundManager.PlaySound("TrainingService");
                 StartNewPoint();
                 break;
-            // TODO disable the ball and the goal
+
             case Utility.TrainingStep.FREE:
-                // TODO add some textual and audio advice for the player about the free training
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
                 NetworkServer.Spawn(Ball);
                 soundManager.PlaySound("TrainingFree");
@@ -297,9 +294,7 @@ public class GameManager : NetworkBehaviour
         Network.Destroy(Ball);
         if (Score[team] == Utility.winningScore)
         {
-            //uiScores.DisplayWinText(team);
             triggerGameWin = !triggerGameWin;
-            // TODO End of the game
         }
         else
         {   
@@ -326,6 +321,32 @@ public class GameManager : NetworkBehaviour
         //IsWaitingForPlayers = true;
         IsWaitingForPlayers = false;
         MustStartNewPoint = true;
+    }
+
+    private void OnChangeTriggerGameWin(bool newVal)
+    {
+        // Display winning text
+        // Trigger or another button comes back to the main menu
+        uiManager.ShowWinningText(GetWinningTeam());
+    }
+
+    // Should only called at the end of the match when there is no equality
+    // TODO raise error in case of equality
+    private Utility.Team GetWinningTeam()
+    {
+        int winningScore = 0;
+        Utility.Team winningTeam = Utility.Team.BLUE;
+
+        foreach (KeyValuePair<Utility.Team, int> entry in score)
+        {
+            if (entry.Value > winningScore)
+            {
+                winningScore = entry.Value;
+                winningTeam = entry.Key;
+            } 
+        }
+
+        return winningTeam;
     }
 
     private void OnChangeTriggerNewBall(bool newVal)
