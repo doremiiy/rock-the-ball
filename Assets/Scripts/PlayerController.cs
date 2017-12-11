@@ -209,6 +209,13 @@ public class PlayerController : NetworkBehaviour{
 
         transform.Rotate(0, x, 0);
         transform.Translate(0, 0, z);
+
+        // Relocate player
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            transform.position = playerSpawn.transform.position;
+            transform.rotation = playerSpawn.transform.rotation;
+        }
     }
 
     public void BallHit()
