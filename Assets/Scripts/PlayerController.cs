@@ -237,7 +237,7 @@ public class PlayerController : NetworkBehaviour{
         // If in training mode, allows to go the next step
         if (GameState.training && gameManager.TrainingStep == Utility.TrainingStep.INITIAL)
         {
-            gameManager.CanAccessNextStep = true;
+            gameManager.AccessNextTrainingStep();
         }
     }
 

@@ -7,6 +7,7 @@ public class UIManager : NetworkBehaviour {
     public List<UIScore> uiScores;
     [SyncVar (hook ="OnChangeTeamScoreTrigger")]
     private Utility.Team teamScoreTrigger;
+    private GameObject mainUI;
 
     public Utility.Team TeamScoreTrigger
     {
@@ -29,6 +30,23 @@ public class UIManager : NetworkBehaviour {
     public override void OnStartServer()
     {
         base.OnStartServer();
+    }
+
+    private void Start()
+    {
+        mainUI = GameObject.FindGameObjectWithTag("MainUI");
+    }
+
+    public void ShowMainText()
+    {
+        GameObject text = mainUI.transform.Find("MainText").gameObject;
+        text.SetActive(true);
+    }
+
+    public void HideMainText()
+    {
+        GameObject text = mainUI.transform.Find("MainText").gameObject;
+        text.SetActive(false);
     }
 
     public void IncrementScore(Utility.Team team)

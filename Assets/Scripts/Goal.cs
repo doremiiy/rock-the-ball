@@ -2,6 +2,8 @@
 
 public class Goal : MonoBehaviour {
 
+    // TODO replace public variables by getters and setters
+
     public Utility.Team team;
     public bool isActive;
     public GameManager gameManager;
@@ -35,7 +37,7 @@ public class Goal : MonoBehaviour {
                     (gameManager.TrainingStep == Utility.TrainingStep.GOAL ||
                     gameManager.TrainingStep == Utility.TrainingStep.SERVICE))
                 {
-                    gameManager.CanAccessNextStep = true;
+                    gameManager.AccessNextTrainingStep();
                 }
             }
         }

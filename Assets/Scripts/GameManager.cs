@@ -226,6 +226,7 @@ public class GameManager : NetworkBehaviour
 
     private void StartNewTrainingPoint()
     {
+        uiManager.HideMainText();
         switch (TrainingStep)
         {
             case Utility.TrainingStep.INITIAL:
@@ -356,6 +357,12 @@ public class GameManager : NetworkBehaviour
             goal.GetComponent<Goal>().isActive = isEnabled;
             goal.GetComponent<BouncingWall>().isActive = !isEnabled;
         }
+    }
+
+    public void AccessNextTrainingStep()
+    {
+        CanAccessNextStep = true;
+        uiManager.ShowMainText();
     }
 
     IEnumerator WaitForInitialization(float waitTime)
