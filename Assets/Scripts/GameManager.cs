@@ -21,6 +21,9 @@ public class GameManager : NetworkBehaviour
     public UIManager uiManager;
     private ServiceManager serviceManager;
     private SoundManager soundManager;
+
+    // Local team
+    private Utility.Team localTeam;
     
     // Score
     private Dictionary<Utility.Team, int> score;
@@ -147,6 +150,19 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    public Utility.Team LocalTeam
+    {
+        get
+        {
+            return localTeam;
+        }
+
+        set
+        {
+            localTeam = value;
+        }
+    }
+
     private void Start()
     {
         Score = new Dictionary<Utility.Team, int>
@@ -229,7 +245,7 @@ public class GameManager : NetworkBehaviour
         switch (TrainingStep)
         {
             case Utility.TrainingStep.INITIAL:
-                Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
+                Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[LocalTeam].transform.position, Quaternion.identity);
                 Ball.transform.Rotate(GameState.trainingBallRotation);
                 Ball.GetComponent<Ball>().SwitchBallUIActivation(true);
                 soundManager.PlaySound("TrainingInitial");
@@ -238,7 +254,7 @@ public class GameManager : NetworkBehaviour
 
             case Utility.TrainingStep.GOAL:
                 Network.Destroy(Ball);
-                Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[GameState.trainingTeam].transform.position, Quaternion.identity);
+                Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[LocalTeam].transform.position, Quaternion.identity);
                 soundManager.PlaySound("TrainingGoal");
                 NetworkServer.Spawn(Ball);
                 SwitchGoalActivation(true);
@@ -292,7 +308,7 @@ public class GameManager : NetworkBehaviour
         }
         else
         {
-            server = GameState.trainingTeam;
+            server = LocalTeam;
         }
         IncrementScore(team);
         Network.Destroy(Ball);
@@ -391,20 +407,28 @@ public class GameManager : NetworkBehaviour
     IEnumerator WaitForInitialization(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        CanAccessNextStep = false;
-        if (GameState.trainingTeam == Utility.Team.BLUE)
+
+        if (GameState.training)
+        {
+            CanAccessNextStep = false;
+            StartNewTrainingPoint();
+        }
+
+        if (LocalTeam == Utility.Team.BLUE)
         {
             GameState.trainingBallRotation = new Vector3(0f, 180f, 0f);
             GameState.mainUIRotation = new Vector3(0f, 180f, 0f);
-        } else if (GameState.trainingTeam == Utility.Team.RED)
+        }
+        else if (LocalTeam == Utility.Team.RED)
         {
             GameState.trainingBallRotation = Vector3.zero;
             GameState.mainUIRotation = Vector3.zero;
-        } else
+        }
+        else
         {
             Debug.Log("GameManager Error: unsupported team");
         }
+
         uiManager.SetUpMainUI();
-        StartNewTrainingPoint();
     }
 }

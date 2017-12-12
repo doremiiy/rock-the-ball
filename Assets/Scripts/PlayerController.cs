@@ -160,27 +160,33 @@ public class PlayerController : NetworkBehaviour{
        
         GameObject redPlayerSpawn = GameObject.FindGameObjectWithTag("RedPlayerSpawn");
         GameObject bluePlayerSpawn = GameObject.FindGameObjectWithTag("BluePlayerSpawn");
-        
-        // Player spawn Detection
-        if (redPlayerSpawn.transform.position == transform.position)
+
+        if (isLocalPlayer)
         {
-            GameState.trainingTeam = Utility.Team.RED;
-            team = Utility.Team.RED;
-            playerSpawn = redPlayerSpawn;
-            Debug.Log("playerController: redPlayerSpawn found");
-        } else if (bluePlayerSpawn.transform.position == transform.position)
-        {
-            GameState.trainingTeam = Utility.Team.BLUE;
-            team = Utility.Team.BLUE;
-            playerSpawn = bluePlayerSpawn;
-            Debug.Log("playerController: bluePlayerSpawn found");
-        }
-        else
-        {
-            Debug.Log("PlayerController ERROR: The player spawn wasn't found");
-            Debug.Log("redPlayerSpawn = " + redPlayerSpawn.transform.position);
-            Debug.Log("bluePlayerSpawn = " + bluePlayerSpawn.transform.position);
-            Debug.Log("player position = " + transform.position);
+            // Player spawn Detection
+            if (redPlayerSpawn.transform.position == transform.position)
+            {
+                gameManager.LocalTeam = Utility.Team.RED;
+                //GameState.trainingTeam = Utility.Team.RED;
+                team = Utility.Team.RED;
+                playerSpawn = redPlayerSpawn;
+                Debug.Log("playerController: redPlayerSpawn found");
+            }
+            else if (bluePlayerSpawn.transform.position == transform.position)
+            {
+                gameManager.LocalTeam = Utility.Team.BLUE;
+                //GameState.trainingTeam = Utility.Team.BLUE;
+                team = Utility.Team.BLUE;
+                playerSpawn = bluePlayerSpawn;
+                Debug.Log("playerController: bluePlayerSpawn found");
+            }
+            else
+            {
+                Debug.Log("PlayerController ERROR: The player spawn wasn't found");
+                Debug.Log("redPlayerSpawn = " + redPlayerSpawn.transform.position);
+                Debug.Log("bluePlayerSpawn = " + bluePlayerSpawn.transform.position);
+                Debug.Log("player position = " + transform.position);
+            }
         }
     }
 
