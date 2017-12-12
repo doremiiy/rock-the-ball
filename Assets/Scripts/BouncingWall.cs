@@ -24,7 +24,6 @@ public class BouncingWall : MonoBehaviour {
                 serviceManager.HandleService(false);
             } else
             {
-                Debug.Log("OK");
                 Rigidbody ballRigidbody = other.GetComponent<Rigidbody>();
                 Vector3 ballSpeed = ballRigidbody.velocity;
                 ballSpeed = Vector3.Project(ballSpeed, wallNormal);

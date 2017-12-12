@@ -281,6 +281,11 @@ public class GameManager : NetworkBehaviour
 
     public void IncreasePlayerScore(Utility.Team team)
     {
+        if (!isServer)
+        {
+            return;
+        }
+
         if (!GameState.training)
         {
             server = Utility.Opp(team);
@@ -289,9 +294,9 @@ public class GameManager : NetworkBehaviour
         {
             server = GameState.trainingTeam;
         }
-        Score[team]++;
         IncrementScore(team);
         Network.Destroy(Ball);
+        Debug.Log("Score: " + Score[team] + "Winning score : " + Utility.winningScore);
         if (Score[team] == Utility.winningScore)
         {
             triggerGameWin = !triggerGameWin;

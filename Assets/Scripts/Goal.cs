@@ -28,6 +28,7 @@ public class Goal : MonoBehaviour {
             {
                 serviceManager.HandleService(false);
             } else if (isActive)
+            // TODO handle this processing on the server only
             {
                 gameManager.IncreasePlayerScore(Utility.Opp(team));
                 soundManager.PlaySound("Goal");
@@ -41,5 +42,10 @@ public class Goal : MonoBehaviour {
                 }
             }
         }
+    }
+
+    public void Explode(Vector3 position)
+    {
+        Instantiate(plasmaExplosion, position, Quaternion.identity);
     }
 }
