@@ -147,22 +147,12 @@ public class PlayerController : NetworkBehaviour{
         }
 
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
-    }
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-    }
-
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-       
-        GameObject redPlayerSpawn = GameObject.FindGameObjectWithTag("RedPlayerSpawn");
-        GameObject bluePlayerSpawn = GameObject.FindGameObjectWithTag("BluePlayerSpawn");
 
         if (isLocalPlayer)
         {
+            GameObject redPlayerSpawn = GameObject.FindGameObjectWithTag("RedPlayerSpawn");
+            GameObject bluePlayerSpawn = GameObject.FindGameObjectWithTag("BluePlayerSpawn");
+
             // Player spawn Detection
             if (redPlayerSpawn.transform.position == transform.position)
             {
@@ -188,6 +178,16 @@ public class PlayerController : NetworkBehaviour{
                 Debug.Log("player position = " + transform.position);
             }
         }
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
     }
 
 

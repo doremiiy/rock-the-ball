@@ -170,6 +170,8 @@ public class GameManager : NetworkBehaviour
             { Utility.Team.BLUE, 0 },
             { Utility.Team.RED, 0 }
         };
+
+        StartCoroutine(WaitForInitialization(0.1f));
     }
 
     public override void OnStartClient()
@@ -206,7 +208,6 @@ public class GameManager : NetworkBehaviour
         {
             TrainingStep = Utility.TrainingStep.INITIAL;
             SwitchGoalActivation(false);
-            StartCoroutine(WaitForInitialization(0.1f));
         }
     }
 
@@ -246,7 +247,7 @@ public class GameManager : NetworkBehaviour
         {
             case Utility.TrainingStep.INITIAL:
                 Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[LocalTeam].transform.position, Quaternion.identity);
-                Ball.transform.Rotate(GameState.trainingBallRotation);
+                Ball.transform.Rotate(GameState.ballRotation);
                 Ball.GetComponent<Ball>().SwitchBallUIActivation(true);
                 soundManager.PlaySound("TrainingInitial");
                 NetworkServer.Spawn(Ball);
@@ -408,20 +409,16 @@ public class GameManager : NetworkBehaviour
     {
         yield return new WaitForSeconds(waitTime);
 
-        if (GameState.training)
-        {
-            CanAccessNextStep = false;
-            StartNewTrainingPoint();
-        }
+        Debug.Log("Local Team : " + LocalTeam);
 
         if (LocalTeam == Utility.Team.BLUE)
         {
-            GameState.trainingBallRotation = new Vector3(0f, 180f, 0f);
+            GameState.ballRotation = new Vector3(0f, 180f, 0f);
             GameState.mainUIRotation = new Vector3(0f, 180f, 0f);
         }
         else if (LocalTeam == Utility.Team.RED)
         {
-            GameState.trainingBallRotation = Vector3.zero;
+            GameState.ballRotation = Vector3.zero;
             GameState.mainUIRotation = Vector3.zero;
         }
         else
@@ -430,5 +427,11 @@ public class GameManager : NetworkBehaviour
         }
 
         uiManager.SetUpMainUI();
+
+        if (GameState.training)
+        {
+            CanAccessNextStep = false;
+            StartNewTrainingPoint();
+        }
     }
 }
