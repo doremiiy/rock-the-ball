@@ -12,6 +12,7 @@ public class ServiceManager : NetworkBehaviour {
     private Utility.Team servingPlayer;
 
     private GameManager gameManager;
+    private SoundManager soundManager;
 
     public GameManager GameManager
     {
@@ -52,6 +53,7 @@ public class ServiceManager : NetworkBehaviour {
             serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
         }
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
     }
 
     public override void OnStartServer()
@@ -63,6 +65,7 @@ public class ServiceManager : NetworkBehaviour {
             serviceZone.GetComponent<ServiceZone>().ServiceManager = this;
         }
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
     }
 
     public void HandleService(bool isIn)
@@ -79,9 +82,11 @@ public class ServiceManager : NetworkBehaviour {
         if (isIn)
         {
             Debug.Log("Service In !");
+            soundManager.PlaySound("NiceShot");
         } else
         {
             Debug.Log("Service Out !");
+            soundManager.PlaySound("Out");
             if (!GameState.training)
             {
                 GameManager.IncreasePlayerScore(Utility.Opp(servingPlayer));
