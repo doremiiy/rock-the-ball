@@ -279,17 +279,17 @@ public class PlayerController : NetworkBehaviour{
         }
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (!isServer)
-        {
-            return;
-        }
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    if (!isServer)
+    //    {
+    //        return;
+    //    }
 
-        if (other.CompareTag("WaitingZone") && gameManager.MustStartNewPoint)
-        {
-            Debug.Log("player not ready");
-            gameManager.PlayersReady[team] = false;
-        }
-    }
+    //    if (other.CompareTag("WaitingZone") && gameManager.MustStartNewPoint)
+    //    {
+    //        Debug.Log("player not ready");
+    //        gameManager.PlayersReady[team] = false;
+    //    }
+    //}
 }
