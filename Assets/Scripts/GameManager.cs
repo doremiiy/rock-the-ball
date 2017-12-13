@@ -231,7 +231,7 @@ public class GameManager : NetworkBehaviour
         // Something with inheritance
         if (GameState.training)
         {
-            if (CanAccessNextStep && Input.GetKeyDown(KeyCode.Return))
+            if (CanAccessNextStep && (Input.GetButtonDown("Cancel") || Input.GetKeyDown(KeyCode.Return)))
             {
                 TrainingStep++;
                 CanAccessNextStep = false;
