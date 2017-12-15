@@ -3,14 +3,11 @@ using UnityEngine.VR;
 
 public class RacketController : MonoBehaviour {
 
-    private GameObject player;
-    private PlayerController playerController;
+    public PlayerController playerController;
     public SoundManager soundManager;
 
     void Start()
     {
-        player = transform.parent.gameObject;
-        playerController = player.GetComponent<PlayerController>();
         soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
     }
 
