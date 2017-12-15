@@ -5,6 +5,7 @@ public class RacketController : MonoBehaviour {
 
     public PlayerController playerController;
     public SoundManager soundManager;
+    public bool shouldVibrate;
 
     void Start()
     {
@@ -18,7 +19,10 @@ public class RacketController : MonoBehaviour {
             Debug.Log("Racket Controller : collision detected");
             playerController.BallHit();
             soundManager.PlaySound("RacketHit");
-            GetComponent<OVRVibration>().VibrateController(Utility.viveControllerNode, 5, 500);
+            if (shouldVibrate)
+            {
+                GetComponent<OVRVibration>().VibrateController(Utility.viveControllerNode, 5, 500);
+            }
         }
 	}
 }
