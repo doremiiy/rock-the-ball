@@ -137,7 +137,7 @@ public class PlayerController : NetworkBehaviour{
 
     private void Start()
     {
-        firstHand.VrNode = VRNode.RightHand;
+        firstHand.VrNode = Utility.viveControllerNode;
 		firstHand.PlayerController =  this;
 
         if (!isLocalPlayer && playerCamera.enabled)

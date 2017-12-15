@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VR;
+
 
 public class Utility {
 
@@ -10,6 +10,7 @@ public class Utility {
     public enum TrainingStep { INITIAL, GOAL, SERVICE, FREE };
 
     static public int winningScore = 1;
+    static public VRNode viveControllerNode = VRNode.RightHand;
     static public string trainingNextStepText = "Well done ! \n Use the trigger to go on to the next training step";
 
     static public Team Opp(Team team)

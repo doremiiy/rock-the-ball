@@ -12,6 +12,8 @@ public class SoundManager : MonoBehaviour {
     public AudioClip trainingGoal;
     public AudioClip trainingService;
     public AudioClip trainingFree;
+    public AudioClip niceShot;
+    public AudioClip outShot;
 
 
     private Dictionary<string, AudioClip> sounds;
@@ -42,7 +44,9 @@ public class SoundManager : MonoBehaviour {
             { "TrainingInitial", trainingInitial },
             { "TrainingGoal", trainingGoal },
             { "TrainingService", trainingService },
-            { "TrainingFree", trainingFree}
+            { "TrainingFree", trainingFree },
+            { "NiceShot", niceShot},
+            { "Out", outShot }
         };
         soundSource = GetComponent<AudioSource>();
 

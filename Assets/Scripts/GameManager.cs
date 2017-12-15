@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-
+using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkBehaviour
 {
@@ -213,11 +213,6 @@ public class GameManager : NetworkBehaviour
 
     private void Update()
     {
-        if (!isServer)
-        {
-            return;
-        }
-
         //if (MustStartNewPoint && !IsWaitingForPlayers && Input.GetKeyDown(KeyCode.Return))
         if (Input.GetKeyDown(KeyCode.Return) && !GameState.training)
         {
@@ -231,12 +226,17 @@ public class GameManager : NetworkBehaviour
         // Something with inheritance
         if (GameState.training)
         {
-            if (CanAccessNextStep && Input.GetKeyDown(KeyCode.Return))
+            if (CanAccessNextStep && (Input.GetButtonDown("Cancel") || Input.GetKeyDown(KeyCode.Return)))
             {
                 TrainingStep++;
                 CanAccessNextStep = false;
                 StartNewTrainingPoint();
             }
+        }
+
+        if (Input.GetButtonDown("MainMenu"))
+        {
+            SceneManager.LoadScene("Menu");
         }
     }
 
