@@ -44,7 +44,7 @@ public class PlayerController : NetworkBehaviour{
             {
                 hand.transform.position = hit.point;
                 currentPosition = hand.transform.position;
-                playerController.BallHit();
+                playerController.BallHit(hand.GetComponent<RacketController>().hand);
             }   
         }
 
@@ -116,7 +116,7 @@ public class PlayerController : NetworkBehaviour{
     public GameManager gameManager;
     
     // Player controller
-    public HandManager firstHand;
+    public HandManager firstHand, head;
     // Player camera
     public Camera playerCamera;
     // Player team
@@ -198,6 +198,7 @@ public class PlayerController : NetworkBehaviour{
         if (isLocalPlayer)
         {
             firstHand.Refresh(timeLapse, true);
+            head.Refresh(timeLapse, false);
         } else if (isServer)
         {
             firstHand.Refresh(timeLapse, false);
@@ -222,22 +223,35 @@ public class PlayerController : NetworkBehaviour{
         // Relocate player
         if (Input.GetKeyDown(KeyCode.R))
         {
-            transform.position = playerSpawn.transform.position;
+            transform.position = playerSpawn.transform.position + playerCamera.transform.position;
+ 
             transform.rotation = playerSpawn.transform.rotation;
         }
     }
 
-    public void BallHit()
+    public void BallHit(Utility.Hand hand)
     {
         if (!isServer)
         {
             return;
         }
 
+
         // TODO replace the force application by an update of the ball's velocity
         ballForce = Vector3.zero;
         ballForce = -gameManager.Ball.GetComponent<Rigidbody>().velocity / compensationDivisor;
-        ballForce += firstHand.Speed * forceMultiplier;
+        if (hand == firstHand.hand.GetComponent<RacketController>().hand)
+        {
+            ballForce += firstHand.Speed * forceMultiplier;
+            Debug.Log("Ball hit with the controller");
+        } else if (hand == head.hand.GetComponent<RacketController>().hand)
+        {
+            ballForce += head.Speed * forceMultiplier;
+            Debug.Log("Ball hit the HEAD");
+        } else
+        {
+            Debug.Log("Error, Unrecognized controller");
+        }
         ballPosition = gameManager.Ball.transform.position;
 
         // If in training mode, allows to go the next step
