@@ -119,6 +119,8 @@ public class PlayerController : NetworkBehaviour{
     public HandManager firstHand, head;
     // Player camera
     public Camera playerCamera;
+    // Player AudioListener
+    public AudioListener playerAudioListener;
     // Player team
     public Utility.Team team;
     // Player spawn
@@ -143,7 +145,7 @@ public class PlayerController : NetworkBehaviour{
         if (!isLocalPlayer && playerCamera.enabled)
         {
             playerCamera.enabled = false;
-            GetComponent<AudioListener>().enabled = false;
+            playerAudioListener.enabled = false;
         }
 
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
