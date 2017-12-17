@@ -48,10 +48,6 @@ public class ServiceManager : NetworkBehaviour {
         {
             serviceZone.GetComponent<ServiceZone>().ServiceManager = this;
         }
-        if (currentServiceZoneIndex != -1)
-        {
-            serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = true;
-        }
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
     }
