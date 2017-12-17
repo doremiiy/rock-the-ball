@@ -70,7 +70,7 @@ public class ServiceManager : NetworkBehaviour {
 
     public void HandleService(bool isIn)
     {
-        if (!IsServed)
+        if (!isServer || !IsServed)
         {
             return;
         }
