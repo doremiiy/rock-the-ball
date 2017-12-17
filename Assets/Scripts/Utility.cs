@@ -9,7 +9,7 @@ public class Utility {
     public enum Hand { FIRST, SECONDARY, HEAD };
     public enum TrainingStep { INITIAL, GOAL, SERVICE, FREE };
 
-    static public int winningScore = 1;
+    static public int winningScore = 15;
     static public VRNode viveControllerNode = VRNode.RightHand;
     static public string trainingNextStepText = "Well done ! \n Use the trigger to go on to the next training step";
 
