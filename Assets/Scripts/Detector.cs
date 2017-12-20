@@ -48,7 +48,7 @@ public class Detector : MonoBehaviour {
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Head"))
         {
             lerpValue = 0f;
             isDisappearing = true;
