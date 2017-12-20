@@ -226,8 +226,14 @@ public class PlayerController : NetworkBehaviour{
         // Relocate player
         if (Input.GetKeyDown(KeyCode.R) || Input.GetButtonDown("Relocate"))
         {
-            Quaternion rotationOffset = playerCamera.transform.rotation * Quaternion.Inverse(playerSpawn.transform.rotation);
+            Quaternion playerCameraRotationY = playerCamera.transform.rotation;
+            playerCameraRotationY.x = 0f;
+            playerCameraRotationY.z = 0f;
+            Quaternion rotationOffset = playerCameraRotationY * Quaternion.Inverse(playerSpawn.transform.rotation);
             transform.rotation *= Quaternion.Inverse(rotationOffset);
+
+            Vector3 playerCameraPosition = playerCamera.transform.position;
+            playerCameraPosition.y = playerSpawn.transform.position.y;
             Vector3 positionOffset = playerCamera.transform.position - playerSpawn.transform.position;
             transform.position -= positionOffset;
         }
