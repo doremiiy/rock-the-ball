@@ -8,7 +8,7 @@ public class RacketController : MonoBehaviour
     public SoundManager soundManager;
     public Utility.Hand hand;
     public bool shouldVibrate;
-    private bool isActive;
+    private bool isActive = true;
 
     public bool IsActive
     {
@@ -38,7 +38,6 @@ public class RacketController : MonoBehaviour
         if (collider.CompareTag("Ball") && IsActive)
         {
             IsActive = false;
-            Debug.Log("Racket Controller : collision detected");
             playerController.BallHit(hand);
             soundManager.PlaySound("RacketHit");
             if (shouldVibrate)
