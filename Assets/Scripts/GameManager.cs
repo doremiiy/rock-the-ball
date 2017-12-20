@@ -372,15 +372,16 @@ public class GameManager : NetworkBehaviour
 
     private void OnChangeTriggerNewBall(bool newVal)
     {
-        UpdateBall();
+        if (!GameState.training)
+        {
+            UpdateBall();
+        }
+        soundManager.SetNewBallAudioSource();
     }
 
     public void UpdateBall()
     {
-        if (!GameState.training)
-        {
-            Ball = GameObject.FindGameObjectWithTag("Ball");
-        }
+        Ball = GameObject.FindGameObjectWithTag("Ball");
     }
 
     private void IncrementScore(Utility.Team team)
