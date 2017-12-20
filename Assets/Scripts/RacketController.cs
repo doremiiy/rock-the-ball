@@ -21,7 +21,7 @@ public class RacketController : MonoBehaviour {
             soundManager.PlaySound("RacketHit");
             if (shouldVibrate)
             {
-                GetComponent<OVRVibration>().VibrateController(Utility.viveControllerNode, 5, 500);
+                //GetComponent<OVRVibration>().VibrateController(Utility.viveControllerNode, 5, 500);
             }
         }
 	}
