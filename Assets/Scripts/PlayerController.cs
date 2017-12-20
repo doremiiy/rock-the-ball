@@ -234,7 +234,7 @@ public class PlayerController : NetworkBehaviour{
 
             Vector3 playerCameraPosition = playerCamera.transform.position;
             playerCameraPosition.y = playerSpawn.transform.position.y;
-            Vector3 positionOffset = playerCamera.transform.position - playerSpawn.transform.position;
+            Vector3 positionOffset = playerCameraPosition - playerSpawn.transform.position;
             transform.position -= positionOffset;
         }
 
