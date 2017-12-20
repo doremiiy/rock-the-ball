@@ -223,7 +223,7 @@ public class PlayerController : NetworkBehaviour{
         transform.Translate(0, 0, z);
 
         // Relocate player
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) || Input.GetButtonDown("Relocate"))
         {
             Quaternion rotationOffset = playerCamera.transform.rotation * Quaternion.Inverse(playerSpawn.transform.rotation);
             transform.rotation *= Quaternion.Inverse(rotationOffset);
