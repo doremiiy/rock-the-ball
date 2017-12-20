@@ -36,10 +36,8 @@ public class Detector : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Deadzone ok");
         if (other.CompareTag("Head"))
         {
-            Debug.Log("Deadzone ok for player");
             lerpValue = 0f;
             isAppearing = true;
             isDisappearing = false;

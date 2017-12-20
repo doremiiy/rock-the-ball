@@ -76,7 +76,6 @@ public class GameManager : NetworkBehaviour
             playersReady = value;
             if (!PlayersReady.ContainsValue(false))
             {
-                Debug.Log("All players ready");
                 isWaitingForPlayers = false; 
             } else
             {
@@ -312,7 +311,6 @@ public class GameManager : NetworkBehaviour
         }
         IncrementScore(team);
         Network.Destroy(Ball);
-        Debug.Log("Score: " + Score[team] + "Winning score : " + Utility.winningScore);
         if (Score[team] == Utility.winningScore)
         {
             triggerGameWin = !triggerGameWin;
@@ -411,8 +409,6 @@ public class GameManager : NetworkBehaviour
     IEnumerator WaitForInitialization(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-
-        Debug.Log("Local Team : " + LocalTeam);
 
         if (LocalTeam == Utility.Team.BLUE)
         {

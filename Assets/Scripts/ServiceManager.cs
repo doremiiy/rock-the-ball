@@ -77,11 +77,9 @@ public class ServiceManager : NetworkBehaviour {
 
         if (isIn)
         {
-            Debug.Log("Service In !");
             soundManager.PlaySound("NiceShot");
         } else
         {
-            Debug.Log("Service Out !");
             soundManager.PlaySound("Out");
             if (!GameState.training)
             {

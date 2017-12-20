@@ -89,7 +89,6 @@ public class SoundManager : MonoBehaviour {
 
     public void SetNewBallAudioSource()
     {
-        Debug.Log("properly set");
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
         GameObject ball;
         if (balls.Length > 1)

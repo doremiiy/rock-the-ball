@@ -258,11 +258,9 @@ public class PlayerController : NetworkBehaviour{
         if (hand == firstHand.hand.GetComponent<RacketController>().hand)
         {
             ballForce += firstHand.Speed * forceMultiplier;
-            Debug.Log("Ball hit with the controller");
         } else if (hand == head.hand.GetComponent<RacketController>().hand)
         {
             ballForce += head.Speed * forceMultiplier;
-            Debug.Log("Ball hit the HEAD");
         } else
         {
             Debug.Log("Error, Unrecognized controller");
@@ -302,7 +300,6 @@ public class PlayerController : NetworkBehaviour{
             //TODO vive controllers trigger
             if (Input.GetKeyDown(KeyCode.Return))
             {
-                Debug.Log("Player ready");
                 gameManager.PlayersReady[team] = true;
             }
         }
