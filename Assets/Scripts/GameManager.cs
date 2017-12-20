@@ -246,18 +246,16 @@ public class GameManager : NetworkBehaviour
         switch (TrainingStep)
         {
             case Utility.TrainingStep.INITIAL:
-                Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[LocalTeam].transform.position, Quaternion.identity);
+                CreateNewBall(LocalTeam);
                 Ball.transform.Rotate(GameState.ballRotation);
                 Ball.GetComponent<Ball>().SwitchBallUIActivation(true);
                 soundManager.PlaySound("TrainingInitial");
-                NetworkServer.Spawn(Ball);
                 break;
 
             case Utility.TrainingStep.GOAL:
                 Network.Destroy(Ball);
-                Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[LocalTeam].transform.position, Quaternion.identity);
+                CreateNewBall(LocalTeam);
                 soundManager.PlaySound("TrainingGoal");
-                NetworkServer.Spawn(Ball);
                 SwitchGoalActivation(true);
                 break;
 
@@ -267,8 +265,7 @@ public class GameManager : NetworkBehaviour
                 break;
 
             case Utility.TrainingStep.FREE:
-                Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
-                NetworkServer.Spawn(Ball);
+                CreateNewBall(server);
                 soundManager.PlaySound("TrainingFree");
                 SwitchGoalActivation(false);
                 break;
@@ -279,6 +276,13 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    private void CreateNewBall(Utility.Team team)
+    {
+        Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[team].transform.position, Quaternion.identity);
+        NetworkServer.Spawn(Ball);
+        triggerNewBall = !triggerNewBall;
+    }
+
     public void ReplaceBall()
     {
         Network.Destroy(Ball);
@@ -287,13 +291,8 @@ public class GameManager : NetworkBehaviour
 
     private void StartNewPoint()
     {
-        Ball = (GameObject)Instantiate(ballPrefab, ballSpawnPoints[server].transform.position, Quaternion.identity);
-        NetworkServer.Spawn(Ball);
+        CreateNewBall(server);
         serviceManager.SetNewServiceZone(server);
-        if (!GameState.training)
-        {
-            triggerNewBall = !triggerNewBall;
-        }
     }
 
     public void IncreasePlayerScore(Utility.Team team)
@@ -378,7 +377,10 @@ public class GameManager : NetworkBehaviour
 
     public void UpdateBall()
     {
-        Ball = GameObject.FindGameObjectWithTag("Ball");
+        if (!GameState.training)
+        {
+            Ball = GameObject.FindGameObjectWithTag("Ball");
+        }
     }
 
     private void IncrementScore(Utility.Team team)
