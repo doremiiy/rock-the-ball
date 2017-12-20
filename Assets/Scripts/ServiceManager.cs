@@ -115,7 +115,6 @@ public class ServiceManager : NetworkBehaviour {
     {
         if (newIndex == -1)
         {
-            Debug.Log("ServiceManager: reset service zone mesh");
             serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
         }
         else
@@ -125,7 +124,6 @@ public class ServiceManager : NetworkBehaviour {
             {
                 serviceZones[currentServiceZoneIndex].GetComponent<MeshRenderer>().enabled = false;
             }
-            Debug.Log("ServiceManager: set new service zone mesh");
             serviceZones[newIndex].GetComponent<MeshRenderer>().enabled = true;
             currentServiceZoneIndex = newIndex;
         }
