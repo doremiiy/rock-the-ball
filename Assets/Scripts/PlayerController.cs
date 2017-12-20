@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using UnityEngine.VR;
 
 
@@ -229,6 +230,11 @@ public class PlayerController : NetworkBehaviour{
             transform.rotation *= Quaternion.Inverse(rotationOffset);
             Vector3 positionOffset = playerCamera.transform.position - playerSpawn.transform.position;
             transform.position -= positionOffset;
+        }
+
+        if (Input.GetAxis("MainMenu") == 1)
+        {
+            SceneManager.LoadScene("Menu");
         }
     }
 
